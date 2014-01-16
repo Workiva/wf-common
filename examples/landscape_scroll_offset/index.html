@@ -1,0 +1,69 @@
+<html>
+<head>
+    <title>Why Does iOS Shift Page</title>
+    <!-- <meta name="apple-mobile-web-app-capable" content="yes" /> -->
+    <!-- <meta name="viewport" content="minimum-scale=1, maximum-scale=1, width=device-width, user-scalable=no" /> -->
+    <!-- <meta name="viewport" content="initial-scale=1.0, user-scalable=no"> -->
+    <!-- <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width, height=device-height"> -->
+    <!-- <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width, height=device-height"> -->
+    <style type="text/css">
+        body {
+            padding: 0;
+            margin: 0;
+            font-size: 1em;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        th {
+            text-align: left;
+        }
+        th, td {
+            border: solid 1px #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>iOS Scrolls on Orientation Change</h1>
+    <p>iOS scrolls the window after loading in landscape orientation and after rotating from portrait to landscape orientation.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>meta viewport</th>
+                <th>window.scrollY after load</th>
+                <th>window.scrollY after rotation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>none</td>
+                <td>19px</td>
+                <td>20px</td>
+            </tr>
+            <tr>
+                <td>initial-scale=1.0, user-scalable=no</td>
+                <td>20px</td>
+                <td>21px</td>
+            </tr>
+            <tr>
+                <td>minimum-scale=1, maximum-scale=1, width=device-width, user-scalable=no</td>
+                <td>0px</td>
+                <td>21px</td>
+            </tr>
+            <tr>
+                <td>initial-scale=1.0, user-scalable=no, width=device-width, height=device-height</td>
+                <td>21px</td>
+                <td>64px</td>
+            </tr>
+            <tr>
+                <td>initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width, height=device-height</td>
+                <td>64px</td>
+                <td>64px</td>
+            </tr>
+        </tbody>
+    </table>
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+</body>
+</html>

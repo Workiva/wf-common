@@ -1,0 +1,26 @@
+module.exports = function(grunt) {
+
+    require('wf-js-grunt').init(grunt, {
+        options: {
+            requireConfig: {
+                paths: {
+                    modernizr: 'bower_components/modernizr/modernizr',
+                    'wf-js-common': './src',
+                    'test': './test'
+                },
+                shim: {
+                    modernizr: {
+                        exports: 'Modernizr'
+                    }
+                }
+            },
+            wwwPort: 9200,
+            coverageThresholds: {
+                statements: 85,
+                branches: 75,
+                functions: 80,
+                lines: 85
+            },
+        }
+    });
+};

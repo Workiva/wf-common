@@ -1,0 +1,23 @@
+{
+  "name": "wf-js-common",
+  "description": "Common, low level utilities that are framework agnostic and very likely to be shared across many projects",
+  "version": "0.1.10",
+  "private": true,
+  "ignore": [
+    "bower_components",
+    "node_modules",
+    "test",
+    "tools",
+    "Gruntfile.js",
+    "index.html",
+    "init.sh",
+    "package.json",
+    "smithy.yaml"
+  ],
+  "dependencies": {
+    "modernizr": "2.6.2"
+  },
+  "devDependencies": {
+    "requirejs": "2.1.8"
+  }
+}
