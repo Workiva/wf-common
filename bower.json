@@ -1,7 +1,7 @@
 {
-  "name": "wf-js-common",
+  "name": "wf-common",
   "description": "Common, low level utilities that are framework agnostic and very likely to be shared across many projects",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "private": true,
   "ignore": [
     "bower_components",
