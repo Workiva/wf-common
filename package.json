@@ -10,6 +10,6 @@
   "readmeFilename": "README.md",
   "devDependencies": {
     "grunt": "~0.4.1",
-    "wf-grunt": "git+ssh://git@github.com:WebFilings/wf-grunt.git#0.3.x"
+    "wf-grunt": "git+ssh://git@github.com:WebFilings/wf-grunt.git#0.3.1"
   }
 }
