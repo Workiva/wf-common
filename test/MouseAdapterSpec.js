@@ -255,5 +255,40 @@ define(function(require) {
 
             expect(normalizedEvent).toBe(null);
         });
+
+        it('should dispatch "onMouseWheelStart" ', function() {
+            spyOn(adapter.onMouseWheelStart, 'dispatch');
+            var evt = {
+                target: target,
+                wheelDeltaY: 1,
+                axis: 'y',
+                HORIZONTAL_AXIS: 'x',
+                VERTICAL_AXIS: 'y'
+            };
+            adapter._onMouseWheel(evt);
+            expect(adapter.onMouseWheelStart.dispatch).toHaveBeenCalledWith([{
+                distance: { x: 0, y: 0 },
+                source: evt
+            }]);
+        });
+
+        it('should dispatch "onMouseWheelEnd" 50ms after the last mouse wheel', function() {
+            spyOn(adapter.onMouseWheelEnd, 'dispatch');
+            var evt = {
+                target: target,
+                wheelDeltaY: 1,
+                axis: 'y',
+                HORIZONTAL_AXIS: 'x',
+                VERTICAL_AXIS: 'y'
+            };
+            adapter._onMouseWheel(evt);
+            waits(50);
+            runs(function() {
+                expect(adapter.onMouseWheelEnd.dispatch).toHaveBeenCalledWith([{
+                    distance: { x: 0, y: 0 },
+                    source: evt
+                }]);
+            });
+        });
     });
 });
