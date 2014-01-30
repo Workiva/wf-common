@@ -18,6 +18,7 @@ define(function(require) {
     'use strict';
 
     var BrowserInfo = require('wf-js-common/BrowserInfo');
+    var FunctionUtil = require('wf-js-common/FunctionUtil');
     var Observable = require('wf-js-common/Observable');
 
     //---------------------------------------------------------
@@ -233,6 +234,8 @@ define(function(require) {
          * @param {Function} [callback]
          */
         this.onMouseWheel = Observable.newObservable();
+        this.onMouseWheelStart = Observable.newObservable();
+        this.onMouseWheelEnd = Observable.newObservable();
 
         //---------------------------------------------------------
         // Private properties
@@ -241,9 +244,20 @@ define(function(require) {
         /**
          * The element to listen for events on.
          * @type {HTMLElement}
-         * @private
          */
         this._target = target;
+
+        /**
+         * Debounced dispatcher for mouse wheel end events.
+         * @type {Function}
+         */
+        this._dispatchMouseWheelEnd = FunctionUtil.debounce(function(event) {
+            this.onMouseWheelEnd.dispatch([{
+                distance: { x: 0, y: 0 },
+                source: event
+            }]);
+            this._wheeling = false;
+        }.bind(this), 50);
 
         //---------------------------------------------------------
         // Initialization
@@ -293,12 +307,27 @@ define(function(require) {
          * @private
          */
         _onMouseWheel: function(event) {
-            var normalizedEvent;
-
-            if (event.target === this._target) {
-                normalizedEvent = normalizeEvent(event);
-                this.onMouseWheel.dispatch([normalizedEvent]);
+            if (event.target !== this._target) {
+                return;
             }
+
+
+            // If we haven't started a mouse wheel for a bit, publish a start event.
+            if (!this._wheeling) {
+                this.onMouseWheelStart.dispatch([{
+                    distance: { x: 0, y: 0 },
+                    source: event
+                }]);
+                this._wheeling = true;
+            }
+
+            // Normalize the mouse wheel event and publish.
+            var normalizedEvent = normalizeEvent(event);
+            this.onMouseWheel.dispatch([normalizedEvent]);
+
+            // Debounce mouse wheels so that an end event is published 50ms
+            // after the last mousewheel occured.
+            this._dispatchMouseWheelEnd(event);
         }
     };
 

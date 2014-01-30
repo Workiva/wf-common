@@ -43,6 +43,20 @@ define(function() {
             }
 
             return curried;
+        },
+
+        debounce: function(fn, delay) {
+            var timeout = null;
+            var debounced = function() {
+                if (timeout) {
+                    clearTimeout(timeout);
+                }
+                var args = Array.prototype.slice.call(arguments);
+                timeout = setTimeout(function() {
+                    fn.apply(null, args);
+                }, delay);
+            };
+            return debounced;
         }
     };
 
