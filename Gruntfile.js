@@ -4,7 +4,6 @@ module.exports = function(grunt) {
         options: {
             requireConfig: {
                 paths: {
-                    lodash: 'bower_components/lodash/dist/lodash',
                     modernizr: 'bower_components/modernizr/modernizr',
                     'wf-js-common': './src',
                     'test': './test'
