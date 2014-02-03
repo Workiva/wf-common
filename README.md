@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/WebFilings/wf-common.png)](https://travis-ci.org/WebFilings/wf-common)
+
 WebFilings Common JavaScript Utilities
 ================================================================================
 
