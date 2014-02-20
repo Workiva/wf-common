@@ -104,6 +104,11 @@ define(function(require) {
         return browser || browserConfigurations.chrome;
     }
 
+    /**
+     * Good reading:
+     * https://developer.mozilla.org/en-US/docs/Web/Reference/Events/wheel#bc1
+     * http://stackoverflow.com/questions/10821985/detecting-mousewheel-on-the-x-axis-left-and-right-with-javascript
+     */
     function detectMouseWheelEvent(document) {
         // Modern browsers support "wheel", even IE9+;
         // however, IE will return false when checking for 'onwheel', so
@@ -149,10 +154,10 @@ define(function(require) {
      * @param {Object} configuration.navigator - browser's info
      */
     var BrowserInfo = function(configuration) {
-
+        configuration = configuration || {};
+        var navigator = configuration.navigator || defaultDependencies.navigator;
         var window = configuration.window || defaultDependencies.window;
         var eventTranslator = configuration.eventTranslator || defaultDependencies.eventTranslator;
-        var navigator = configuration.navigator || defaultDependencies.navigator;
         var browser = detectBrowser(navigator);
 
         //---------------------------------------------------------
@@ -254,5 +259,5 @@ define(function(require) {
         };
     };
 
-    return new BrowserInfo(defaultDependencies);
+    return new BrowserInfo();
 });
