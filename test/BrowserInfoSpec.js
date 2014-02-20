@@ -36,6 +36,33 @@ define(function(require) {
             expect(browserInfo.hasCssTransforms3d).toBe(true);
         });
 
+        describe('detecting mousewheel support', function() {
+            it('should detect "wheel" for modern browsers', function() {
+                var browserInfo = new BrowserInfo.constructor({
+                    window: { document: { onwheel: function() {} } }
+                });
+                expect(browserInfo.Events.MOUSE_SCROLL).toBe('wheel');
+            });
+            it('should detect "wheel" for IE9+', function() {
+                var browserInfo = new BrowserInfo.constructor({
+                    window: { document: { documentMode: 9 } }
+                });
+                expect(browserInfo.Events.MOUSE_SCROLL).toBe('wheel');
+            });
+            it('should detect "mousewheel" support for webkit and IE8-', function() {
+                var browserInfo = new BrowserInfo.constructor({
+                    window: { document: { onmousewheel: function() {} } }
+                });
+                expect(browserInfo.Events.MOUSE_SCROLL).toBe('mousewheel');
+            });
+            it('should detect "DOMMouseScroll" for older Firefox', function() {
+                var browserInfo = new BrowserInfo.constructor({
+                    window: { document: {} }
+                });
+                expect(browserInfo.Events.MOUSE_SCROLL).toBe('DOMMouseScroll');
+            });
+        });
+
         describe('getBrowser', function() {
             var currentBrowser = BrowserInfo.getBrowser();
             var supportedBrowser = false;
@@ -209,7 +236,8 @@ define(function(require) {
         describe('edge case scenarios', function() {
             var edgeCaseBrowserInfo = new BrowserInfo.constructor({
                 window: {
-                    devicePixelRatio: null
+                    devicePixelRatio: null,
+                    document: document
                 },
                 navigator: {
                     vendor: null,
