@@ -38,31 +38,26 @@ define(function(require) {
         chrome: {
             name: 'Chrome',
             vendor: 'Google Inc.',
-            vendorPrefix: 'webkit',
-            mouseWheelEvent: 'mousewheel'
+            vendorPrefix: 'webkit'
         },
         firefox: {
             name: 'Firefox',
             vendor: '',
-            vendorPrefix: 'moz',
-            mouseWheelEvent: 'DOMMouseScroll'
+            vendorPrefix: 'moz'
         },
         ie: {
             name: 'MSIE',
-            vendorPrefix: 'ms',
-            mouseWheelEvent: 'wheel'
+            vendorPrefix: 'ms'
         },
         opera: {
             name: 'OPR',
             vendor: 'Opera Software ASA',
-            vendorPrefix: 'o',
-            mouseWheelEvent: 'mousewheel'
+            vendorPrefix: 'o'
         },
         safari: {
             name: 'Safari',
             vendor: 'Apple Computer, Inc.',
-            vendorPrefix: 'webkit',
-            mouseWheelEvent: 'mousewheel'
+            vendorPrefix: 'webkit'
         }
     };
 
@@ -109,12 +104,39 @@ define(function(require) {
         return browser || browserConfigurations.chrome;
     }
 
+    /**
+     * Good reading:
+     * https://developer.mozilla.org/en-US/docs/Web/Reference/Events/wheel#bc1
+     * http://stackoverflow.com/questions/10821985/detecting-mousewheel-on-the-x-axis-left-and-right-with-javascript
+     */
+    function detectMouseWheelEvent(document) {
+        // Modern browsers support "wheel", even IE9+;
+        // however, IE will return false when checking for 'onwheel', so
+        // we need to check the documentMode property.
+        if ('onwheel' in document || document.documentMode >= 9) {
+            return 'wheel';
+        }
+        // Webkit and IE8- support at least 'mousewheel'
+        else if ('onmousewheel' in document) {
+            return 'mousewheel';
+        }
+        // let's assume that remaining browsers are older Firefox
+        else {
+            return 'DOMMouseScroll';
+        }
+    }
 
     //---------------------------------------------------------
     //
     // BrowserInfo definition
     //
     //---------------------------------------------------------
+
+    var defaultDependencies = {
+        window: window,
+        eventTranslator: Modernizr,
+        navigator: navigator
+    };
 
     /**
      * Information about the current browser.
@@ -132,10 +154,11 @@ define(function(require) {
      * @param {Object} configuration.navigator - browser's info
      */
     var BrowserInfo = function(configuration) {
-
-        var window = configuration.window;
-        var eventTranslator = configuration.eventTranslator;
-        var browser = detectBrowser(configuration.navigator);
+        configuration = configuration || {};
+        var navigator = configuration.navigator || defaultDependencies.navigator;
+        var window = configuration.window || defaultDependencies.window;
+        var eventTranslator = configuration.eventTranslator || defaultDependencies.eventTranslator;
+        var browser = detectBrowser(navigator);
 
         //---------------------------------------------------------
         // Objects
@@ -146,7 +169,7 @@ define(function(require) {
          */
         this.Events = {
             TRANSITION_END: detectTransitionEndEventName(eventTranslator),
-            MOUSE_SCROLL: browser.mouseWheelEvent,
+            MOUSE_SCROLL: detectMouseWheelEvent(window.document),
 
             /**
              * Browser specific event cancellation.
@@ -236,9 +259,5 @@ define(function(require) {
         };
     };
 
-    return new BrowserInfo({
-        window: window,
-        eventTranslator: Modernizr,
-        navigator: navigator
-    });
+    return new BrowserInfo();
 });
