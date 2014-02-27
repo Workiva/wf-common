@@ -1,6 +1,6 @@
 {
   "name": "wf-common",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Common JavaScript functionality for all WebFilings applications.",
   "private": true,
   "repository": {
