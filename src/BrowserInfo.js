@@ -100,6 +100,11 @@ define(function(require) {
             }
         }
 
+        // If no browser detected, check for IE11 via Trident token
+        if (!browser && userAgent.indexOf('Trident') !== -1) {
+            browser = browserConfigurations.ie;
+        }
+
         // If no browser detected, use webkit as a fallback.
         return browser || browserConfigurations.chrome;
     }
