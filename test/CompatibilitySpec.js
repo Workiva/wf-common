@@ -22,7 +22,8 @@ define(function(require) {
     describe('Compatibility', function() {
         it('should create a console if it is undefined', function () {
             var tempWindow = {
-                console: undefined
+                console: undefined,
+                CustomEvent: function(){}
             };
             var testConfiguration = {
                 window: tempWindow
@@ -38,7 +39,8 @@ define(function(require) {
 
         it('should test all of the generated console functions', function() {
             var tempWindow = {
-                console: undefined
+                console: undefined,
+                CustomEvent: function(){}
             };
 
             var testConfiguration = {
@@ -63,6 +65,65 @@ define(function(require) {
             var testCompatibility = new Compatibility.constructor(testConfiguration);
             expect(testCompatibility).toBeDefined();
             expect(window.console).toBe(expectedConsole);
+        });
+
+        it('should polyfill the CustomEvent constructor if it is an object', function() {
+            var tempWindow = {
+                CustomEvent: {},
+                Event: {
+                    prototype: {}
+                }
+            };
+
+            var testConfiguration = {
+                window: tempWindow
+            };
+
+            var testCompatibility = new Compatibility.constructor(testConfiguration);
+            expect(testCompatibility).toBeDefined();
+            expect(tempWindow.CustomEvent).toEqual(jasmine.any(Function));
+            expect(tempWindow.CustomEvent).not.toEqual(jasmine.any(Object));
+        });
+
+        it('should polyfill the CustomEvent constructor if it is undefined', function() {
+            var tempWindow = {
+                CustomEvent: undefined,
+                Event: {
+                    prototype: {}
+                }
+            };
+
+            var testConfiguration = {
+                window: tempWindow
+            };
+
+            var testCompatibility = new Compatibility.constructor(testConfiguration);
+            expect(testCompatibility).toBeDefined();
+            expect(tempWindow.CustomEvent).toEqual(jasmine.any(Function));
+            expect(tempWindow.CustomEvent).not.toEqual(jasmine.any(Object));
+        });
+
+        it('should not polyfill the CustomEvent constructor if it is a function', function() {
+            var mockObject = {
+                test: 'valid'
+            };
+
+            var tempWindow = {
+                CustomEvent: function() { return mockObject; },
+                Event: {
+                    prototype: {}
+                }
+            };
+
+            var testConfiguration = {
+                window: tempWindow
+            };
+
+            var result = testConfiguration.window.CustomEvent();
+
+            var testCompatibility = new Compatibility.constructor(testConfiguration);
+            expect(testCompatibility).toBeDefined();
+            expect(result).toEqual(mockObject);
         });
     });
 });
