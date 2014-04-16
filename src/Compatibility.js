@@ -24,6 +24,8 @@ define(function() {
      * When we are running a browser without a console (IE<=9), there will
      * be no console object and things will break, so make one!
      *
+     * IE doesn't have a CustomEvent event constructor, so make one!
+     *
      * @constructor
      *
      * @name Compatibility
@@ -41,6 +43,21 @@ define(function() {
                 warn: function() {},
                 error: function() {}
             };
+        }
+
+        if (typeof configuration.window.CustomEvent === 'undefined' || typeof configuration.window.CustomEvent === 'object') {
+            (function () {
+                function CustomEvent ( event, params ) {
+                    params = params || { bubbles: false, cancelable: false, detail: undefined };
+                    var evt = document.createEvent( 'CustomEvent' );
+                    evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+                    return evt;
+                }
+
+                CustomEvent.prototype = configuration.window.Event.prototype;
+
+                configuration.window.CustomEvent = CustomEvent;
+            })();
         }
     };
 
