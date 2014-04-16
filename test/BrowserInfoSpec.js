@@ -231,6 +231,22 @@ define(function(require) {
 
                 expect(MSIEInfo.getBrowser()).toEqual('MSIE');
             });
+
+            it('should detect if Internet Explorer 11 is the current browser', function() {
+                var MSIE11Info = new BrowserInfo.constructor({
+                    window: window,
+                    navigator: {
+                        userAgent: 'Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko'
+                    },
+                    eventTranslator: {
+                        prefixed: function() {
+                            return null;
+                        }
+                    }
+                });
+
+                expect(MSIE11Info.getBrowser()).toEqual('MSIE');
+            });
         });
 
         describe('edge case scenarios', function() {
