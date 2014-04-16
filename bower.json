@@ -1,7 +1,7 @@
 {
   "name": "wf-common",
   "description": "Common, low level utilities that are framework agnostic and very likely to be shared across many projects",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "private": true,
   "ignore": [
     "bower_components",
