@@ -29,7 +29,6 @@ define(function(require) {
      * @param {object} el The DOM element to make scrollable
      */
     Overflow.scrollY = function(el) {
-        //if (!Modernizr.touch) { return; }
         if (!Overflow.hasTouch) { return; }
         if (!el) { return; }
 
