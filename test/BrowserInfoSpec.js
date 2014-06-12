@@ -69,7 +69,8 @@ define(function(require) {
 
             for(var browser in BrowserInfo.Browsers) {
                 if (BrowserInfo.Browsers.hasOwnProperty(browser)) {
-                    if (currentBrowser === browser) {
+                    var browserName = BrowserInfo.Browsers[browser];
+                    if (currentBrowser === browserName) {
                         supportedBrowser = true;
                     }
                 }

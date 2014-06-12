@@ -196,7 +196,7 @@ define(function(require) {
         // browser names
         this.Browsers = {
             Chrome: 'Chrome',
-            Firefox: 'Firefox',
+            FireFox: 'Firefox',
             IE: 'MSIE',
             Opera: 'OPR',
             Safari: 'Safari'
