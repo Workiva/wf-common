@@ -525,7 +525,19 @@ define(function(require) {
 
         describe('loadDataFont', function() {
             function stripCss(str) {
-                return str.replace(/ /g, '').replace(/"/g, '').replace(/\n/g, '');
+                // Strips extra characters from CSS that different browsers insert
+                // inconsistently.
+                // e.g.
+                //   Firefox inserts new lines
+                //   Chrome collapses spaces and removes quotes
+                //   IE inserts tab
+                var stripped = str
+                    .replace(/ /g, '')
+                    .replace(/"/g, '')
+                    .replace(/\n/g, '')
+                    .replace(/\r/g, '')
+                    .replace(/\t/g, '');
+                return stripped;
             }
 
             it('should load a data URI', function() {
@@ -546,8 +558,6 @@ define(function(require) {
                     '@font-face { font-family: "AdobeBlank"; font-style: normal; font-weight: normal; src: url("{{data}}"); }'
                     .replace('{{data}}', adobeBlankDataUri);
 
-                // Don't compare newlines, spaces, or quotes since different browsers insert them differently
-                // e.g. Firefox inserts new lines, Chrome collapses spaces and removes quotes
                 var expectedRuleStripped = stripCss(expectedRule);
                 var actualRuleStripped = stripCss(actualRule);
                 expect(actualRuleStripped).toEqual(expectedRuleStripped);
@@ -570,8 +580,6 @@ define(function(require) {
                     '@font-face { font-family: AdobeBlank; font-style: normal; font-weight: normal; src: url(data:application/octet-stream;base64,{{data}}); }'
                     .replace('{{data}}', adobeBlankData);
 
-                // Don't compare newlines, spaces, or quotes since different browsers insert them differently
-                // e.g. Firefox inserts new lines, Chrome collapses spaces and removes quotes
                 var expectedRuleStripped = stripCss(expectedRule);
                 var actualRuleStripped = stripCss(actualRule);
                 expect(actualRuleStripped).toEqual(expectedRuleStripped);
