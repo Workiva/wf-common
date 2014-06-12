@@ -183,6 +183,9 @@ define(function(require) {
              */
             cancelEvent: function(event) {
                 event = event || window.event;
+                if (!event) {
+                    return;
+                }
                 if (event.preventDefault) {
                     event.preventDefault();
                     event.stopPropagation();

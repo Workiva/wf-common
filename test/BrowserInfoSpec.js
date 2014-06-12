@@ -119,8 +119,11 @@ define(function(require) {
 
                 BrowserInfo.Events.cancelEvent(event);
 
-                expect(window.event.returnValue).toEqual(false);
-                expect(window.event.cancelBubble).toEqual(true);
+                // In IE9, you cannot set window.event so we'll skip over this
+                if (window.event) {
+                    expect(window.event.returnValue).toEqual(false);
+                    expect(window.event.cancelBubble).toEqual(true);
+                }
             });
         });
 
