@@ -460,12 +460,7 @@ define(function() {
             this.window.addEventListener('orientationchange', function() {
                 var el = self.document.activeElement;
                 if (el) {
-                    try {
-                        el.blur();
-                    }
-                    catch (e) {
-                        // ignore errors with blur. IE9 throws.
-                    }
+                    el.blur();
                     self.window.scrollTo(0, 0);
                 }
             });

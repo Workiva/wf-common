@@ -499,24 +499,21 @@ define(function(require) {
                 });
 
                 it('should blur the active element', function() {
-                    domUtil.dismissIOS7VirtualKeyboardOnOrientationChange();
-
                     var el = fakeDocument.activeElement = document.createElement('div');
                     spyOn(el, 'blur');
-                    var orientationchange = getEventListener('orientationchange');
 
-                    orientationchange();
+                    domUtil.dismissIOS7VirtualKeyboardOnOrientationChange();
+                    getEventListener('orientationchange')();
 
                     expect(el.blur).toHaveBeenCalled();
                 });
 
                 it('should scroll the window to its origin', function() {
+                    var el = fakeDocument.activeElement = document.createElement('div');
+                    spyOn(el, 'blur');
+
                     domUtil.dismissIOS7VirtualKeyboardOnOrientationChange();
-
-                    fakeDocument.activeElement = document.createElement('div');
-                    var orientationchange = getEventListener('orientationchange');
-
-                    orientationchange();
+                    getEventListener('orientationchange')();
 
                     expect(fakeWindow.scrollTo).toHaveBeenCalledWith(0, 0);
                 });
