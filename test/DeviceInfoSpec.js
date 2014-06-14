@@ -17,21 +17,53 @@
 define(function(require) {
     'use strict';
 
+    // var head = document.getElementsByTagName('head')[0];
+    // var meta = document.createElement('meta');
+    // meta.name = "viewport";
+    // meta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0";
+    // head.appendChild(meta);
     var DeviceInfo = require('wf-js-common/DeviceInfo');
 
     describe('DeviceInfo', function() {
 
-        it('should have a correct set of properties on initialization', function() {
+        it('should have the correct screenWidth', function() {
             expect(DeviceInfo.screenWidth).toEqual(window.screen.width);
+        });
+
+        it('should have the correct screenHeight', function() {
             expect(DeviceInfo.screenHeight).toEqual(window.screen.height);
-            expect(DeviceInfo.viewportWidth).toEqual(window.innerWidth);
+        });
+
+        it('should have the correct viewportWidth', function() {
+            // window.innerWidth can return 982 sometimes and 981 other times
+            // on iPad. I suspect this has to do with the actual pixels being
+            // 981.5 x2, and the CSS pixels reported varying.
+            // You do not see this behavior if you set a meta viewport element.
+            var difference = Math.abs(DeviceInfo.viewportWidth - window.innerWidth);
+            expect(difference).toBeLessThan(2);
+        });
+
+        it('should have the correct viewportHeight', function() {
             expect(DeviceInfo.viewportHeight).toEqual(window.innerHeight);
+        });
+
+        it('should have the correct devicePixelRatio', function() {
             expect(DeviceInfo.devicePixelRatio).toEqual(window.devicePixelRatio ? window.devicePixelRatio : 1);
+        });
+
+        it('should have the correct hasTouch', function() {
             expect(DeviceInfo.hasTouch).toEqual(('ontouchstart' in window));
+        });
+
+        it('should have the correct desktop', function() {
             expect(DeviceInfo.desktop).toEqual(!('ontouchstart' in window));
+        });
+
+        it('should have the correct EVENTS', function() {
             expect(DeviceInfo.EVENTS).toEqual({
                 WINDOW_RESIZE: ('ontouchstart' in window) ? 'orientationchange' : 'resize'
             });
         });
+
     });
 });
