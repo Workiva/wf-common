@@ -27,47 +27,15 @@ define(function() {
         this.left = rectCoords.left || 0;
         this.bottom = rectCoords.bottom || 0;
         this.right = rectCoords.right || 0;
-
-        // Make the rectangle sane.
-        if (this.left > this.right) {
-            var oldLeft;
-            oldLeft = this.left;
-            this.left = this.right;
-            this.right = oldLeft;
-        }
-        if (this.top > this.bottom) {
-            var oldTop;
-            oldTop = this.top;
-            this.top = this.bottom;
-            this.bottom = oldTop;
-        }
-
     };
 
     Rectangle.prototype = {
 
-        // CR - what might be a better name for shape?  points aren't really shapes
-        // But, shapeOrPoint is icky, and thing is too generic.
-        /**
-         * Checks to see if shape is in the rectangle.  Shape can only be a point right now.
-         * @param  {Object} shape - Possible shapes:
-         *   * point - {{x:Number, y:Number}}
-         * @return {Boolean} true if shape is in the rectangle, false if not in rectangle or if invalid shape.
-         */
-        contains: function(shape) {
-            var ret = false;
-            if (shape) {
-                if (shape.x && shape.y) {
-                    ret = this._containsPoint(shape);
-                }
-            }
-            return ret;
-        },
         /**
          * Tests whether a point falls within the rectangle
          * @param {{x:Number, y:Number}} point
          */
-        _containsPoint: function(point) {
+        contains: function(point) {
             var x = point.x;
             var y = point.y;
 
