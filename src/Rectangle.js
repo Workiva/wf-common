@@ -30,16 +30,16 @@ define(function() {
 
         // Make the rectangle sane.
         if (this.left > this.right) {
-            var holder;
-            holder = this.left;
+            var oldLeft;
+            oldLeft = this.left;
             this.left = this.right;
-            this.right = holder;
+            this.right = oldLeft;
         }
         if (this.top > this.bottom) {
-            var holder;
-            holder = this.top;
+            var oldTop;
+            oldTop = this.top;
             this.top = this.bottom;
-            this.bottom = holder;
+            this.bottom = oldTop;
         }
 
     };

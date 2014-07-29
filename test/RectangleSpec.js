@@ -1,7 +1,7 @@
 define(function(require) {
     'use strict';
 
-    var Rectangle = require('wf-common/Rectangle');
+    var Rectangle = require('wf-js-common/Rectangle');
 
 
     describe('Rectangle', function() {
@@ -17,9 +17,28 @@ define(function(require) {
             expect(rect.getHeight()).toEqual(ourHeight);
         });
 
-        it('should reverse left and right when left > right');
-        it('should reverse top and bottom when top > bottom');
-        it('should return false if we pass in a bogus shape');
+        describe('handles bad input well', function() {
+            var badRectCoords = {top: 20, bottom: 10, left: 40, right: 30};
+            var fixedRect = new Rectangle(badRectCoords);
+
+            it('should reverse left and right when left > right', function() {
+                expect(fixedRect.left).toEqual(30);
+                expect(fixedRect.right).toEqual(40);
+            });
+
+            it('should reverse top and bottom when top > bottom', function() {
+                expect(fixedRect.top).toEqual(10);
+                expect(fixedRect.bottom).toEqual(20);
+            });
+
+            it('should return false if we pass in a bogus shape', function() {
+                var badShape = {};
+
+                var hitTestResult = fixedRect.contains(badShape);
+
+                expect(hitTestResult).toEqual(false);
+            });
+        });
 
         describe('contains point', function() {
 
