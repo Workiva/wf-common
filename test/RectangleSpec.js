@@ -1,25 +1,36 @@
 define(function(require) {
     'use strict';
 
-    var Rectangle = require('wf-js-viewer/util/Rectangle');
+    var Rectangle = require('wf-common/Rectangle');
+
 
     describe('Rectangle', function() {
-        describe('#isPointInRectangle', function() {
-            var rectCoords = {top: 10, bottom: 20, left: 30, right: 40};
-            var rect;
+        var rectCoords = {top: 10, bottom: 20, left: 30, right: 40};
+        var rect = new Rectangle(rectCoords);
 
-            beforeEach(function() {
-                rect = new Rectangle(rectCoords);
-            });
+        it('should return an accurate width', function() {
+            var ourWidth = rectCoords.right - rectCoords.left;
+            expect(rect.getWidth()).toEqual(ourWidth);
+        });
+        it('should return an accurate height', function() {
+            var ourHeight = rectCoords.bottom - rectCoords.top;
+            expect(rect.getHeight()).toEqual(ourHeight);
+        });
+
+        it('should reverse left and right when left > right');
+        it('should reverse top and bottom when top > bottom');
+        it('should return false if we pass in a bogus shape');
+
+        describe('contains point', function() {
 
             it('should return true when point is inside rectangle', function() {
                 // compute a point at the center of the rectangle
                 var pointInRect = {
-                    x: rectCoords.left + (rectCoords.right - rectCoords.left) / 2,
-                    y: rectCoords.top + (rectCoords.bottom - rectCoords.top) / 2
+                    x: rect.left + rect.getWidth() / 2,
+                    y: rect.top + rect.getHeight() / 2
                 };
 
-                var hitTestResult = rect.isPointInRectangle(pointInRect);
+                var hitTestResult = rect.contains(pointInRect);
 
                 expect(hitTestResult).toEqual(true);
             });
@@ -27,11 +38,11 @@ define(function(require) {
             it('should return true when point is on top edge of rectangle', function() {
                 // compute a point on top edge of the rectangle
                 var pointOnEdgeOfRect = {
-                    x: rectCoords.left + (rectCoords.right - rectCoords.left) / 2,
-                    y: rectCoords.top
+                    x: rect.left + rect.getWidth() / 2,
+                    y: rect.top
                 };
 
-                var hitTestResult = rect.isPointInRectangle(pointOnEdgeOfRect);
+                var hitTestResult = rect.contains(pointOnEdgeOfRect);
 
                 expect(hitTestResult).toEqual(true);
             });
@@ -39,11 +50,11 @@ define(function(require) {
             it('should return true when point is on bottom edge of rectangle', function() {
                 // compute a point on bottom edge of the rectangle
                 var pointOnEdgeOfRect = {
-                    x: rectCoords.left + (rectCoords.right - rectCoords.left) / 2,
-                    y: rectCoords.bottom
+                    x: rect.left + rect.getWidth() / 2,
+                    y: rect.bottom
                 };
 
-                var hitTestResult = rect.isPointInRectangle(pointOnEdgeOfRect);
+                var hitTestResult = rect.contains(pointOnEdgeOfRect);
 
                 expect(hitTestResult).toEqual(true);
             });
@@ -51,11 +62,11 @@ define(function(require) {
             it('should return true when point is on left edge of rectangle', function() {
                 // compute a point on left edge of the rectangle
                 var pointOnEdgeOfRect = {
-                    x: rectCoords.left,
-                    y: rectCoords.top + (rectCoords.bottom - rectCoords.top) / 2
+                    x: rect.left,
+                    y: rect.top + rect.getHeight() / 2
                 };
 
-                var hitTestResult = rect.isPointInRectangle(pointOnEdgeOfRect);
+                var hitTestResult = rect.contains(pointOnEdgeOfRect);
 
                 expect(hitTestResult).toEqual(true);
             });
@@ -63,11 +74,11 @@ define(function(require) {
             it('should return true when point is on right edge of rectangle', function() {
                 // compute a point on right edge of the rectangle
                 var pointOnEdgeOfRect = {
-                    x: rectCoords.right,
-                    y: rectCoords.top + (rectCoords.bottom - rectCoords.top) / 2
+                    x: rect.right,
+                    y: rect.top + rect.getHeight() / 2
                 };
 
-                var hitTestResult = rect.isPointInRectangle(pointOnEdgeOfRect);
+                var hitTestResult = rect.contains(pointOnEdgeOfRect);
 
                 expect(hitTestResult).toEqual(true);
             });
@@ -75,11 +86,11 @@ define(function(require) {
             it('should return false when point is above rectangle', function() {
                 // compute a point directly above the rectangle
                 var pointAboveRect = {
-                    x: rectCoords.left + (rectCoords.right - rectCoords.left) / 2,
-                    y: rectCoords.top - 1
+                    x: rect.left + rect.getWidth() / 2,
+                    y: rect.top - 1
                 };
 
-                var hitTestResult = rect.isPointInRectangle(pointAboveRect);
+                var hitTestResult = rect.contains(pointAboveRect);
 
                 expect(hitTestResult).toEqual(false);
             });
@@ -87,11 +98,11 @@ define(function(require) {
             it('should return false when point is below rectangle', function() {
                 // compute a point directly below the rectangle
                 var pointBelowRect = {
-                    x: rectCoords.left + (rectCoords.right - rectCoords.left) / 2,
-                    y: rectCoords.bottom + 1
+                    x: rect.left + rect.getWidth() / 2,
+                    y: rect.bottom + 1
                 };
 
-                var hitTestResult = rect.isPointInRectangle(pointBelowRect);
+                var hitTestResult = rect.contains(pointBelowRect);
 
                 expect(hitTestResult).toEqual(false);
             });
@@ -99,11 +110,11 @@ define(function(require) {
             it('should return false when point is left of rectangle', function() {
                 // compute a point directly left of the rectangle
                 var pointLeftOfRect = {
-                    x: rectCoords.left - 1,
-                    y: rectCoords.top + (rectCoords.bottom - rectCoords.top) / 2
+                    x: rect.left - 1,
+                    y: rect.top + rect.getHeight() / 2
                 };
 
-                var hitTestResult = rect.isPointInRectangle(pointLeftOfRect);
+                var hitTestResult = rect.contains(pointLeftOfRect);
 
                 expect(hitTestResult).toEqual(false);
             });
@@ -111,11 +122,11 @@ define(function(require) {
             it('should return false when point is right of rectangle', function() {
                 // compute a point directly right of the rectangle
                 var pointRightOfRect = {
-                    x: rectCoords.right + 1,
-                    y: rectCoords.top + (rectCoords.bottom - rectCoords.top) / 2
+                    x: rect.right + 1,
+                    y: rect.top + rect.getHeight() / 2
                 };
 
-                var hitTestResult = rect.isPointInRectangle(pointRightOfRect);
+                var hitTestResult = rect.contains(pointRightOfRect);
 
                 expect(hitTestResult).toEqual(false);
             });
