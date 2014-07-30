@@ -279,8 +279,7 @@ define(function(require) {
         dispose: function() {
             this._target.removeEventListener(
                 BrowserInfo.Events.MOUSE_SCROLL,
-                this._onMouseWheel,
-                false
+                this._onMouseWheel
             );
 
             this.onMouseWheel.dispose();
@@ -297,7 +296,8 @@ define(function(require) {
         _initialize: function() {
             this._target.addEventListener(
                BrowserInfo.Events.MOUSE_SCROLL,
-               this._onMouseWheel.bind(this)
+               this._onMouseWheel.bind(this),
+               false
             );
         },
 
@@ -307,11 +307,6 @@ define(function(require) {
          * @private
          */
         _onMouseWheel: function(event) {
-            if (event.target !== this._target) {
-                return;
-            }
-
-
             // If we haven't started a mouse wheel for a bit, publish a start event.
             if (!this._wheeling) {
                 this.onMouseWheelStart.dispatch([{
