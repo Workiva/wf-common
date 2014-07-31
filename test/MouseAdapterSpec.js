@@ -26,11 +26,6 @@ define(function(require) {
             removeEventListener: function() {}
         };
 
-        var otherTarget = {
-            addEventListener: function() {},
-            removeEventListener: function() {}
-        };
-
         var adapter;
         var normalizedEvent;
 
@@ -57,7 +52,7 @@ define(function(require) {
 
         it('should have inertia when speeding up along the X axis', function() {
             var event1 = {
-                target: target,
+                currentTarget: target,
                 deltaX: 2,
                 axis: 'x',
                 HORIZONTAL_AXIS: 'x',
@@ -65,7 +60,7 @@ define(function(require) {
             };
 
             var event2 = {
-                target: target,
+                currentTarget: target,
                 deltaX: 10,
                 axis: 'x',
                 HORIZONTAL_AXIS: 'x',
@@ -73,7 +68,7 @@ define(function(require) {
             };
 
             var event3 = {
-                target: target,
+                currentTarget: target,
                 deltaX: 10,
                 axis: 'x',
                 HORIZONTAL_AXIS: 'x',
@@ -91,7 +86,7 @@ define(function(require) {
         it('should have inertia when speeding up along the Y axis', function() {
 
             var event1 = {
-                target: target,
+                currentTarget: target,
                 deltaY: 2,
                 axis: 'y',
                 HORIZONTAL_AXIS: 'x',
@@ -99,7 +94,7 @@ define(function(require) {
             };
 
             var event2 = {
-                target: target,
+                currentTarget: target,
                 deltaY: 10,
                 axis: 'y',
                 HORIZONTAL_AXIS: 'x',
@@ -107,7 +102,7 @@ define(function(require) {
             };
 
             var event3 = {
-                target: target,
+                currentTarget: target,
                 deltaY: 10,
                 axis: 'y',
                 HORIZONTAL_AXIS: 'x',
@@ -125,7 +120,7 @@ define(function(require) {
         it('should set deltas from detail if detail is defined', function() {
 
             var event1 = {
-                target: target,
+                currentTarget: target,
                 detail: null,
                 deltaY: 2,
                 axis: 'y',
@@ -134,7 +129,7 @@ define(function(require) {
             };
 
             var event2 = {
-                target: target,
+                currentTarget: target,
                 detail: null,
                 deltaX: 2,
                 axis: 'x',
@@ -152,7 +147,7 @@ define(function(require) {
         it('should not set deltas from detail if detail is not defined', function() {
 
             var event1 = {
-                target: target,
+                currentTarget: target,
                 detail: 2,
                 deltaY: null,
                 axis: 'y',
@@ -161,7 +156,7 @@ define(function(require) {
             };
 
             var event2 = {
-                target: target,
+                currentTarget: target,
                 detail: 2,
                 deltaX: null,
                 axis: 'x',
@@ -180,7 +175,7 @@ define(function(require) {
             var mouseAdapter = new MouseAdapter(target);
 
             var event1 = {
-                target: target,
+                currentTarget: target,
                 detail: 1,
                 axis: '',
                 HORIZONTAL_AXIS: 'x',
@@ -195,7 +190,7 @@ define(function(require) {
         it('no original deltaX or deltaY fall through', function() {
 
             var event1 = {
-                target: target,
+                currentTarget: target,
                 deltaY: null,
                 deltaX: null,
                 axis: '',
@@ -212,7 +207,7 @@ define(function(require) {
         it('should use wheelDeltaX if defined', function() {
 
             var event1 = {
-                target: target,
+                currentTarget: target,
                 wheelDeltaX: 1,
                 axis: 'x',
                 HORIZONTAL_AXIS: 'x',
@@ -228,7 +223,7 @@ define(function(require) {
         it('should use wheelDeltaY if defined', function() {
 
             var event1 = {
-                target: target,
+                currentTarget: target,
                 wheelDeltaY: 1,
                 axis: 'y',
                 HORIZONTAL_AXIS: 'x',
@@ -241,25 +236,10 @@ define(function(require) {
             expect(normalizedEvent.distance.y).toBe(0.16666666666666666);
         });
 
-        it('no target fall through', function() {
-
-            var event1 = {
-                target: otherTarget,
-                detail: 1,
-                axis: 'x',
-                HORIZONTAL_AXIS: 'x',
-                VERTICAL_AXIS: 'y'
-            };
-
-            adapter._onMouseWheel(event1);
-
-            expect(normalizedEvent).toBe(null);
-        });
-
         it('should dispatch "onMouseWheelStart" ', function() {
             spyOn(adapter.onMouseWheelStart, 'dispatch');
             var evt = {
-                target: target,
+                currentTarget: target,
                 wheelDeltaY: 1,
                 axis: 'y',
                 HORIZONTAL_AXIS: 'x',
@@ -275,7 +255,7 @@ define(function(require) {
         it('should dispatch "onMouseWheelEnd" 50ms after the last mouse wheel', function() {
             spyOn(adapter.onMouseWheelEnd, 'dispatch');
             var evt = {
-                target: target,
+                currentTarget: target,
                 wheelDeltaY: 1,
                 axis: 'y',
                 HORIZONTAL_AXIS: 'x',
