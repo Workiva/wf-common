@@ -26,44 +26,99 @@ define(function(require) {
 
     describe('DeviceInfo', function() {
 
-        it('should have the correct screenWidth', function() {
-            expect(DeviceInfo.screenWidth).toEqual(window.screen.width);
+        var fakeWindow;
+
+        beforeEach(function() {
+            fakeWindow = {
+                screen: {
+                    width: 0,
+                    height: 0
+                }
+            };
         });
 
-        it('should have the correct screenHeight', function() {
-            expect(DeviceInfo.screenHeight).toEqual(window.screen.height);
+        it('should return an instance of DeviceInfo', function() {
+            expect(DeviceInfo instanceof DeviceInfo.constructor).toBe(true);
         });
 
-        it('should have the correct viewportWidth', function() {
-            // window.innerWidth can return 982 sometimes and 981 other times
-            // on iPad. I suspect this has to do with the actual pixels being
-            // 981.5 x2, and the CSS pixels reported varying.
-            // You do not see this behavior if you set a meta viewport element.
-            var difference = Math.abs(DeviceInfo.viewportWidth - window.innerWidth);
-            expect(difference).toBeLessThan(2);
-        });
-
-        it('should have the correct viewportHeight', function() {
-            expect(DeviceInfo.viewportHeight).toEqual(window.innerHeight);
-        });
-
-        it('should have the correct devicePixelRatio', function() {
-            expect(DeviceInfo.devicePixelRatio).toEqual(window.devicePixelRatio ? window.devicePixelRatio : 1);
-        });
-
-        it('should have the correct hasTouch', function() {
-            expect(DeviceInfo.hasTouch).toEqual(('ontouchstart' in window));
-        });
-
-        it('should have the correct desktop', function() {
-            expect(DeviceInfo.desktop).toEqual(!('ontouchstart' in window));
-        });
-
-        it('should have the correct EVENTS', function() {
-            expect(DeviceInfo.EVENTS).toEqual({
-                WINDOW_RESIZE: ('ontouchstart' in window) ? 'orientationchange' : 'resize'
+        describe('screenWidth', function() {
+            it('should return the window screen width', function() {
+                var expected = fakeWindow.screen.width = 100;
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.screenWidth).toEqual(expected);
             });
         });
 
+        describe('screenHeight', function() {
+            it('should return the window screen height', function() {
+                var expected = fakeWindow.screen.height = 100;
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.screenHeight).toEqual(expected);
+            });
+        });
+
+        describe('viewportWidth', function() {
+            it('should return the window innerWidth', function() {
+                var expected = fakeWindow.innerWidth = 100;
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.viewportWidth).toEqual(expected);
+            });
+        });
+
+        describe('viewportHeight', function() {
+            it('should return the window innerHeight', function() {
+                var expected = fakeWindow.innerHeight = 100;
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.viewportHeight).toEqual(expected);
+            });
+        });
+
+        describe('devicePixelRatio', function() {
+            it('should return the window devicePixelRatio if defined', function() {
+                var expected = fakeWindow.devicePixelRatio = 2;
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.devicePixelRatio).toEqual(expected);
+            });
+            it('should return 1 if window does not define devicePixelRatio', function() {
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.devicePixelRatio).toEqual(1);
+            });
+        });
+
+        describe('hasTouch', function() {
+            it('should return true if window defines ontouchstart', function() {
+                fakeWindow.ontouchstart = function() {};
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.hasTouch).toBe(true);
+            });
+            it('should return false if window does not define ontouchstart', function() {
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.hasTouch).toBe(false);
+            });
+        });
+
+        describe('desktop', function() {
+            it('should return false if window defines ontouchstart', function() {
+                fakeWindow.ontouchstart = function() {};
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.desktop).toBe(false);
+            });
+            it('should return true if window does not define ontouchstart', function() {
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.desktop).toBe(true);
+            });
+        });
+
+        describe('EVENTS.WINDOW_RESIZE', function() {
+            it('should return "orientationchange" if window defines ontouchstart', function() {
+                fakeWindow.ontouchstart = function() {};
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.EVENTS.WINDOW_RESIZE).toBe('orientationchange');
+            });
+            it('should return "resize" if window does not define ontouchstart', function() {
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.EVENTS.WINDOW_RESIZE).toBe('resize');
+            });
+        });
     });
 });
