@@ -3,6 +3,7 @@ module.exports = function(grunt) {
     require('wf-grunt').init(grunt, {
         options: {
             sauceLabs: {
+                buildNumber: process.env.TRAVIS_BUILD_NUMBER,
                 testName: 'wf-common unit tests',
                 username: process.env.SAUCE_LABS_USERNAME,
                 accessKey: process.env.SAUCE_LABS_ACCESS_KEY
