@@ -112,10 +112,10 @@ define(function(require) {
 
             it('should default to window\'s event if not given an event', function() {
                 var event = null;
-                window.event = {
-                    preventDefault: null,
-                    stopPropagation: null
-                };
+                // window.event = {
+                //     preventDefault: null,
+                //     stopPropagation: null
+                // };
 
                 BrowserInfo.Events.cancelEvent(event);
 
