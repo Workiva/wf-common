@@ -110,17 +110,17 @@ define(function(require) {
                 expect(event.cancelBubble).toEqual(true);
             });
 
-            // In IE9, you cannot set window.event so we'll skip over this
-            if (window.event) {
-                it('should default to window\'s event if not given an event', function() {
-                    var event = null;
+            it('should default to window\'s event if not given an event', function() {
+                var event = null;
 
-                    BrowserInfo.Events.cancelEvent(event);
+                BrowserInfo.Events.cancelEvent(event);
 
+                // In IE9, you cannot set window.event so we'll skip over this
+                if (window.event) {
                     expect(window.event.returnValue).toEqual(false);
                     expect(window.event.cancelBubble).toEqual(true);
-                });
-            }
+                }
+            });
         });
 
         describe('browser name', function() {
