@@ -2,6 +2,10 @@ module.exports = function(grunt) {
 
     require('wf-grunt').init(grunt, {
         options: {
+            sauceLabsCredentials: {
+                username: process.env.SAUCE_LABS_USERNAME,
+                accessKey: process.env.SAUCE_LABS_ACCESS_KEY
+            },
             requireConfig: {
                 paths: {
                     modernizr: 'bower_components/modernizr/modernizr',

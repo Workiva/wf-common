@@ -1,10 +1,14 @@
 language: node_js
 node_js:
-    - "0.10"
+- '0.10'
 before_install:
-    - npm install -g bower
-    - npm install -g grunt-cli
+- npm install -g bower
+- npm install -g grunt-cli
 install:
-    - ./init.sh
+- ./init.sh
 script:
-    - grunt
+- grunt ci
+env:
+  global:
+  - secure: XCtQ9d6AoTDaV0tMWptBFw4hbl1OH6WQGVsUXzKr8c1e3tDpqOtyCyM+I2eesrLffPAl0h7QLZBRDb1RjiISzyesy9rgRnGqeHISg1goST/ozZfpkmMvQlfUl6OnQHZh0CDk+zSVoJ//QhGMIBeRBF9l1WGBiNNAVM0W0hw/xUI=
+  - secure: b0Pl8M8GPKz3pSLIVwnSOSuqc4PkHgoi1b466d6K9aL+PvXfCBjinghqFn8giu7FZvCGX6/BW/3LaS0kS3TMirpeWQpf7xcAMXUYooM2ncs0N9YFBcw0xAlPa8fmNQ82kqe/V6X4XsLPYFTiWxqWGzS0buAC9gvT6dzdjIEtNMs=
