@@ -66,23 +66,23 @@ define(function() {
         if (typeof configuration.window.atob === 'undefined' || typeof configuration.window.btoa === 'undefined') {
             var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
-            function InvalidCharacterError(message) {
+            var InvalidCharacterError = function (message) {
                 this.message = message;
-            }
-            InvalidCharacterError.prototype = new Error;
+            };
+            InvalidCharacterError.prototype = new Error();
             InvalidCharacterError.prototype.name = 'InvalidCharacterError';
 
             (function () {
                 function atob ( input ) {
                     var str = String(input).replace(/=+$/, '');
-                    if (str.length % 4 == 1) {
-                        throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+                    if (str.length % 4 === 1) {
+                        throw new InvalidCharacterError('"atob" failed: The string to be decoded is not correctly encoded.');
                     }
                     for (
                         // initialize result and counters
                         var bc = 0, bs, buffer, idx = 0, output = '';
                         // get next character
-                        buffer = str.charAt(idx++);
+                        !!(buffer = str.charAt(idx++));
                         // character found in table? initialize bit storage and add its ascii value;
                         ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
                         // and if not first of each 4 characters,
@@ -113,7 +113,7 @@ define(function() {
                     ) {
                         charCode = str.charCodeAt(idx += 3/4);
                         if (charCode > 0xFF) {
-                            throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+                            throw new InvalidCharacterError('"btoa" failed: The string to be encoded contains characters outside of the Latin1 range.');
                         }
                         block = block << 8 | charCode;
                     }
