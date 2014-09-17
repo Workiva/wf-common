@@ -17,7 +17,9 @@
 define(function(require) {
     'use strict';
 
-    var base64 = require('wf-js-common/Base64');
+    var base64 = require('wf-js-common/polyfills/Base64');
+    var CustomEvent = require('wf-js-common/polyfills/CustomEvent');
+
 
     /**
      * Create a window.console object
@@ -51,18 +53,9 @@ define(function(require) {
         }
 
         if (typeof configuration.window.CustomEvent === 'undefined' || typeof configuration.window.CustomEvent === 'object') {
-            (function () {
-                function CustomEvent ( event, params ) {
-                    params = params || { bubbles: false, cancelable: false, detail: undefined };
-                    var evt = document.createEvent( 'CustomEvent' );
-                    evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
-                    return evt;
-                }
+            CustomEvent.prototype = configuration.window.Event.prototype;
 
-                CustomEvent.prototype = configuration.window.Event.prototype;
-
-                configuration.window.CustomEvent = CustomEvent;
-            })();
+            configuration.window.CustomEvent = CustomEvent;
         }
 
         if (typeof configuration.window.atob === 'undefined' || typeof configuration.window.btoa === 'undefined') {
