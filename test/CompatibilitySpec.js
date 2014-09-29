@@ -125,5 +125,112 @@ define(function(require) {
             expect(testCompatibility).toBeDefined();
             expect(result).toEqual(mockObject);
         });
+
+        it('should polyfill atob if it is undefined', function() {
+            var testBtoa = function () {};
+            var tempWindow = {
+                btoa: testBtoa,
+                CustomEvent: function(){},
+                Event: {
+                    prototype: {}
+                }
+            };
+            var testConfiguration = {
+                window: tempWindow
+            };
+
+            var testCompatibility = new Compatibility.constructor(testConfiguration);
+
+            expect(testCompatibility).toBeDefined();
+            expect(tempWindow.atob).toEqual(jasmine.any(Function));
+        });
+
+        it('should polyfill atob if it is undefined', function() {
+            var testBtoa = function () {};
+            var tempWindow = {
+                btoa: testBtoa,
+                CustomEvent: function(){},
+                Event: {
+                    prototype: {}
+                }
+            };
+            var testConfiguration = {
+                window: tempWindow
+            };
+
+            var testCompatibility = new Compatibility.constructor(testConfiguration);
+
+            var testInput = 'dGVzdA==';
+            var expectedOutput = 'test';
+            var output = tempWindow.atob(testInput);
+
+            expect(testCompatibility).toBeDefined();
+            expect(output).toEqual(expectedOutput);
+        });
+
+        it('should polyfill btoa if it is undefined', function() {
+            var testAtob = function () {};
+            var tempWindow = {
+                atob: testAtob,
+                CustomEvent: function(){},
+                Event: {
+                    prototype: {}
+                }
+            };
+            var testConfiguration = {
+                window: tempWindow
+            };
+
+            var testCompatibility = new Compatibility.constructor(testConfiguration);
+
+            expect(testCompatibility).toBeDefined();
+            expect(tempWindow.btoa).toEqual(jasmine.any(Function));
+        });
+
+        it('should polyfill btoa if it is undefined', function() {
+            var testAtob = function () {};
+            var tempWindow = {
+                atob: testAtob,
+                CustomEvent: function(){},
+                Event: {
+                    prototype: {}
+                }
+            };
+            var testConfiguration = {
+                window: tempWindow
+            };
+
+            var testCompatibility = new Compatibility.constructor(testConfiguration);
+
+            var testInput = 'test';
+            var expectedOutput = 'dGVzdA==';
+            var output = tempWindow.btoa(testInput);
+
+            expect(testCompatibility).toBeDefined();
+            expect(output).toEqual(expectedOutput);
+        });
+
+        it('should not polyfill atob/btoa if they are both defined', function() {
+            var testAtob = function () {};
+            var testBtoa = function () {};
+
+            var tempWindow = {
+                CustomEvent: function(){},
+                Event: {
+                    prototype: {}
+                },
+                atob: testAtob,
+                btoa: testBtoa
+            };
+
+            var testConfiguration = {
+                window: tempWindow
+            };
+
+            var testCompatibility = new Compatibility.constructor(testConfiguration);
+            expect(testCompatibility).toBeDefined();
+            expect(tempWindow.atob).toEqual(testAtob);
+            expect(tempWindow.btoa).toEqual(testBtoa);
+        });
     });
 });

@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-define(function() {
+define(function(require) {
     'use strict';
+
+    var base64 = require('wf-js-common/polyfills/Base64');
+    var CustomEvent = require('wf-js-common/polyfills/CustomEvent');
+
 
     /**
      * Create a window.console object
@@ -25,6 +29,9 @@ define(function() {
      * be no console object and things will break, so make one!
      *
      * IE doesn't have a CustomEvent event constructor, so make one!
+     *
+     * IE9 doesn't support atob and btoa for base64 encoding and decoding, so
+     * polyfill. Based on https://github.com/davidchambers/Base64.js
      *
      * @constructor
      *
@@ -46,18 +53,14 @@ define(function() {
         }
 
         if (typeof configuration.window.CustomEvent === 'undefined' || typeof configuration.window.CustomEvent === 'object') {
-            (function () {
-                function CustomEvent ( event, params ) {
-                    params = params || { bubbles: false, cancelable: false, detail: undefined };
-                    var evt = document.createEvent( 'CustomEvent' );
-                    evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
-                    return evt;
-                }
+            CustomEvent.prototype = configuration.window.Event.prototype;
 
-                CustomEvent.prototype = configuration.window.Event.prototype;
+            configuration.window.CustomEvent = CustomEvent;
+        }
 
-                configuration.window.CustomEvent = CustomEvent;
-            })();
+        if (typeof configuration.window.atob === 'undefined' || typeof configuration.window.btoa === 'undefined') {
+            configuration.window.atob = base64.atob;
+            configuration.window.btoa = base64.btoa;
         }
     };
 
