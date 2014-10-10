@@ -17,7 +17,7 @@
 define(function(require) {
     'use strict';
 
-    var AsyncSpec = require('wf-js-common/AsyncSpec');
+    var AsyncSpec = require('./AsyncSpec');
     var MouseAdapter = require('wf-js-common/MouseAdapter');
 
     describe('MouseAdapter', function() {
