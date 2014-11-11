@@ -26,7 +26,7 @@ for both wf-js-common and its dependencies:
 requirejs.config({
     paths: {
         'wf-js-common': 'path-to-bower_components/wf-js-common/src/',
-
+        bowser: 'path-to-bower_components/bowser/bowser',
         modernizr: 'path-to-bower_components/modernizr/modernizr'
     },
     shim: {

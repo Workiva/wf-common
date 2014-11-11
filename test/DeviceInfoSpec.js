@@ -97,15 +97,9 @@ define(function(require) {
             });
         });
 
-        describe('desktop', function() {
-            it('should return false if window defines ontouchstart', function() {
-                fakeWindow.ontouchstart = function() {};
-                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
-                expect(deviceInfo.desktop).toBe(false);
-            });
-            it('should return true if window does not define ontouchstart', function() {
-                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
-                expect(deviceInfo.desktop).toBe(true);
+        describe('desktop vs mobile', function() {
+            it('should return opposite values for mobile vs desktop', function() {
+                expect(DeviceInfo.mobile).toBe(!DeviceInfo.desktop);
             });
         });
 

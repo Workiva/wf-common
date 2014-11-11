@@ -15,7 +15,8 @@
     "smithy.yaml"
   ],
   "dependencies": {
-    "modernizr": "2.6.2"
+    "modernizr": "2.6.2",
+    "bowser": "~0.7.2"
   },
   "devDependencies": {
     "requirejs": "2.1.8"

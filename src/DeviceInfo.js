@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-define(function() {
+define(function(require) {
     'use strict';
+
+    var bowser = require('bowser');
 
     /**
      * @classdesc
@@ -55,16 +57,28 @@ define(function() {
         this.devicePixelRatio = window.devicePixelRatio ? window.devicePixelRatio : 1;
 
         /**
-         * The device has touch (i.e. tablet)
+         * The device has touch events
          * @type {boolean}
          */
         this.hasTouch = ('ontouchstart' in window);
 
         /**
-         * the device doesn't have touch (i.e. desktop)
+         * The device is a mobile device
          * @type {boolean}
          */
-        this.desktop = !('ontouchstart' in window);
+        this.mobile = bowser.mobile || bowser.tablet || false;
+
+        /**
+         * The device is a desktop (i.e. desktop)
+         * @type {boolean}
+         */
+        this.desktop = !(this.mobile);
+
+        /**
+         * Expose the bowser object
+         * @type {Object}
+         */
+        this.browser = bowser; // spelling difference IS intentional
 
         /**
          * Events object

@@ -11,6 +11,7 @@ module.exports = function(grunt) {
             requireConfig: {
                 paths: {
                     modernizr: 'bower_components/modernizr/modernizr',
+                    bowser: 'bower_components/bowser/bowser',
                     'wf-js-common': './src',
                     'test': './test'
                 },
