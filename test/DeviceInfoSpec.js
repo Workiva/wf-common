@@ -23,6 +23,7 @@ define(function(require) {
     // meta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0";
     // head.appendChild(meta);
     var DeviceInfo = require('wf-js-common/DeviceInfo');
+    var bowser = require('bowser');
 
     describe('DeviceInfo', function() {
 
@@ -100,6 +101,17 @@ define(function(require) {
         describe('desktop vs mobile', function() {
             it('should return opposite values for mobile vs desktop', function() {
                 expect(DeviceInfo.mobile).toBe(!DeviceInfo.desktop);
+            });
+        });
+
+        describe('bowser', function() {
+            it('should return false for Media Center PC', function() {
+                var bdev = bowser._detect('Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; InfoPath.2; .NET CLR 1.1.4322; .NET4.0C; Tablet PC 2.0)');
+                expect(bdev.msie).toBe(true);
+                expect(bdev.tablet).toBe(true);
+                expect(DeviceInfo.tablet).not.toBe(true); // with touch fix
+                expect(DeviceInfo.browser.tablet).toBe(false);
+                expect(DeviceInfo.browser.mobile).toBe(false);
             });
         });
 

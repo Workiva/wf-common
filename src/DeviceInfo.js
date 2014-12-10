@@ -17,8 +17,6 @@
 define(function(require) {
     'use strict';
 
-    var bowser = require('bowser');
-
     /**
      * @classdesc
      * This object contains all sorts of device info
@@ -26,6 +24,9 @@ define(function(require) {
      * @exports DeviceInfo
      */
     var DeviceInfo = function(window) {
+
+        var bowser = require('bowser');
+
         /**
          * The width of the screen in pixels
          * @type {number}
@@ -66,7 +67,7 @@ define(function(require) {
          * The device is a mobile device
          * @type {boolean}
          */
-        this.mobile = bowser.mobile || bowser.tablet || false;
+        this.mobile = this.hasTouch && (bowser.mobile || bowser.tablet || false);
 
         /**
          * The device is a desktop (i.e. desktop)
@@ -79,6 +80,8 @@ define(function(require) {
          * @type {Object}
          */
         this.browser = bowser; // spelling difference IS intentional
+        this.browser.tablet = !!this.browser.tablet && this.hasTouch;
+        this.browser.mobile = !!this.browser.mobile && this.hasTouch;
 
         /**
          * Events object
@@ -87,7 +90,7 @@ define(function(require) {
          * 'orientationchange' (mobile) or a 'resize' (desktop) value
          */
         this.EVENTS = {
-            WINDOW_RESIZE: ('ontouchstart' in window) ? 'orientationchange' : 'resize'
+            WINDOW_RESIZE: this.mobile ? 'orientationchange' : 'resize'
         };
     };
 
