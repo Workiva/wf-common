@@ -118,7 +118,10 @@ define(function(require) {
         describe('EVENTS.WINDOW_RESIZE', function() {
             it('should return "orientationchange" if window defines ontouchstart', function() {
                 fakeWindow.ontouchstart = function() {};
-                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                var fakeBowser = {
+                    mobile: true
+                };
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow, fakeBowser);
                 expect(deviceInfo.EVENTS.WINDOW_RESIZE).toBe('orientationchange');
             });
             it('should return "resize" if window does not define ontouchstart', function() {

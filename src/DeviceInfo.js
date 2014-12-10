@@ -23,9 +23,9 @@ define(function(require) {
      *
      * @exports DeviceInfo
      */
-    var DeviceInfo = function(window) {
+    var DeviceInfo = function(window, bowserOverride) {
 
-        var bowser = require('bowser');
+        var bowser = bowserOverride || require('bowser');
 
         /**
          * The width of the screen in pixels
