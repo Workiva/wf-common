@@ -281,11 +281,12 @@ define(function() {
         },
 
         width: function(element) {
-            var width = element.offsetWidth;
+            var boundingRect = element.getBoundingClientRect();
+            var width = boundingRect.width;
 
             if (width === 0 && element.style.display === 'none') {
                 this.makeMeasureReady(element, function(element) {
-                    width = element.offsetWidth;
+                    width = element.getBoundingClientRect().width;
                 });
             }
             else if (width === 0 && element.style.display === '') {
@@ -294,7 +295,7 @@ define(function() {
                     parent = parent.parentElement;
                 }
                 if (parent) {
-                    width = parent.offsetWidth;
+                    width = parent.getBoundingClientRect().width;
                 }
             }
 
