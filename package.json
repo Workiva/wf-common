@@ -11,5 +11,10 @@
   "devDependencies": {
     "grunt": "^0.4.5",
     "wf-grunt": "git://github.com/WebFilings/wf-grunt.git#0.4.0"
+  },
+  "jspm": {
+    "directories": {
+      "lib": "src"
+    }
   }
 }
