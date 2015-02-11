@@ -11,15 +11,13 @@ define(function(require) {
     BrowserFixes.prototype = {
 
         /**
-         * This applies a workaround for disappearing DOM elements in webkit
-         * browsers. When you zoom in on a document with annotations some of the
-         * annotation DOM elements (highlights, drag handles, and comment icons)
-         * disappear as you pan around or otherwise interact with them.
-         * The following discussions indicate this translateZ setting may help.
+         * This applies a workaround for disappearing DOM elements over canvas
+         * content in webkit browsers. The following discussions indicate this
+         * translateZ setting may help.
          * http://stackoverflow.com/questions/19172249
          * http://stackoverflow.com/questions/7808110
          *
-         * @param  {Object} domElement -- the DOM element to apply the fix to
+         * @param {HTMLElement} domElement -- the DOM element to apply the fix to
          */
         applyDisappearingElementFix: function(domElement) {
             if (DeviceInfo.browser.webkit && BrowserInfo.hasCssTransforms3d) {
