@@ -34,6 +34,9 @@ define(function(require) {
                 screen: {
                     width: 0,
                     height: 0
+                },
+                navigator: {
+                    userAgent: 'nuffin'
                 }
             };
         });
@@ -95,6 +98,11 @@ define(function(require) {
             it('should return false if window does not define ontouchstart', function() {
                 var deviceInfo = new DeviceInfo.constructor(fakeWindow);
                 expect(deviceInfo.hasTouch).toBe(false);
+            });
+            it('should return true for IE on Microsoft Surfaces', function() {
+                fakeWindow.navigator.userAgent = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; ARM; Trident/6.0; Touch)';
+                var deviceInfo = new DeviceInfo.constructor(fakeWindow);
+                expect(deviceInfo.hasTouch).toBe(true);
             });
         });
 
