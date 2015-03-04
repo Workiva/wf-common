@@ -61,7 +61,9 @@ define(function(require) {
          * The device has touch events
          * @type {boolean}
          */
-        this.hasTouch = ('ontouchstart' in window);
+        // UserAgents with 'Touch' is IE on Microsoft Surfaces
+        this.hasTouch = ('ontouchstart' in window) ||
+            window.navigator.userAgent.toLowerCase().indexOf('touch') !== -1;
 
         /**
          * The device is a mobile device
