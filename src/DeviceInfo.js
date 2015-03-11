@@ -17,6 +17,9 @@
 define(function(require) {
     'use strict';
 
+    // UserAgents with 'Touch' is IE on Microsoft Surfaces
+    var ieTouchRegex = / Touch[;)]/;
+
     /**
      * @classdesc
      * This object contains all sorts of device info
@@ -61,9 +64,7 @@ define(function(require) {
          * The device has touch events
          * @type {boolean}
          */
-        // UserAgents with 'Touch' is IE on Microsoft Surfaces
-        this.hasTouch = ('ontouchstart' in window) ||
-            window.navigator.userAgent.toLowerCase().indexOf('touch') !== -1;
+        this.hasTouch = ('ontouchstart' in window) || window.navigator.userAgent.match(ieTouchRegex);
 
         /**
          * The device is a mobile device
