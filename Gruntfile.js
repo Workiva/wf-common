@@ -23,7 +23,7 @@ module.exports = function(grunt) {
             },
             wwwPort: 9200,
             coverageThresholds: {
-                statements: 85,
+                statements: 80,
                 branches: 75,
                 functions: 80,
                 lines: 85
