@@ -1,0 +1,125 @@
+define(function(require) {
+    'use strict';
+
+    var EventSource = require('wf-js-common/EventSource');
+
+    var testEvent;
+
+    // Phantom doesn't seem to have the support for creating events, so we're relying on saucelabs
+    // to run these tests.  For local development, hit the jasmine test running with the browser
+    // you want to use.
+
+    var canCreateEvent = true;
+    try {
+        testEvent = document.createEvent('Event');
+    } catch (e) {
+        canCreateEvent = false;
+    }
+
+    var uiEventsNewable = true;
+    try {
+        testEvent = new window.UIEvent('touchstart');
+    } catch (e) {
+        uiEventsNewable = false;
+    }
+
+    var mouseEventsNewable = true;
+    try {
+        testEvent = new window.MouseEvent('click');
+    } catch (e) {
+        mouseEventsNewable = false;
+    }
+
+    // Pointer do not seem to be newable, so we set the constructor of a Event to PointerEvent.
+    var pointerEventsAvailable = true;  // IE10 and 11 as of now
+    if (!canCreateEvent || !window.PointerEvent) {
+        pointerEventsAvailable = false;
+    }
+
+    // Touch events are not newable in Chrome 41 unless you have mobile emulation, or a touch
+    // device.  FF 36 seems unable to new up a TouchEvent, also.  We 'cheat' and set the
+    // constructure to a TouchEvent.
+    var touchEventsAvailable = true;
+    if (!uiEventsNewable || !window.TouchEvent) {
+        touchEventsAvailable = false;
+    }
+
+    var wheelEventsNewable = true;
+    try {
+        testEvent = new window.WheelEvent('mousewheel');
+    } catch (e) {
+        wheelEventsNewable = false;
+    }
+
+
+    describe('EventSource', function() {
+        var event;
+
+        describe('isMouse', function() {
+            if (mouseEventsNewable) {
+                it('should detect a MouseEvent', function() {
+                    event = new window.MouseEvent('click');
+                    expect(EventSource.isMouse(event)).toBe(true);
+                });
+                it('should descend into a hammerjs event to detect the original source', function() {
+                    var hammerEvent = {};
+                    hammerEvent.source = new window.MouseEvent('click');
+                    expect(EventSource.isMouse(event)).toBe(true);
+                });
+            }
+
+            if (pointerEventsAvailable) {
+                it('should detect a PointerEvent, with a pointer type of mouse, as a MouseEvent', function() {
+                    event = document.createEvent('Event');
+                    event.constructor = window.PointerEvent;
+                    event.pointerType = 'mouse';
+                    expect(EventSource.isMouse(event)).toBe(true);
+                });
+                it('should detect a PointerEvent, with a pointer type of pen, as a MouseEvent', function() {
+                    event = document.createEvent('Event');
+                    event.constructor = window.PointerEvent;
+                    event.pointerType = 'pen';
+                    expect(EventSource.isMouse(event)).toBe(true);
+                });
+            }
+        });
+
+        if (pointerEventsAvailable) {
+            describe('isPointer', function() {
+                it('should detect a PointerEvent', function() {
+                    event = document.createEvent('Event');
+                    event.constructor = window.PointerEvent;
+                    expect(EventSource.isPointer(event)).toBe(true);
+                });
+            });
+        }
+
+        describe('isTouch', function() {
+            if (touchEventsAvailable) {
+                it('should detect a TouchEvent', function() {
+                    event = new window.UIEvent('touchstart');
+                    event.constructor = window.TouchEvent;
+                    expect(EventSource.isTouch(event)).toBe(true);
+                });
+            }
+
+            if (pointerEventsAvailable) {
+                it('should detect a PointerEvent, with a pointer type of touch, as a TouchEvent', function() {
+                    event = document.createEvent('Event');
+                    event.constructor = window.PointerEvent;
+                    event.pointerType = 'touch';
+                    expect(EventSource.isTouch(event)).toBe(true);
+                });
+            }
+        });
+
+        if (wheelEventsNewable) {
+            describe('isWheel', function() {
+                it('should detect a WheelEvent', function() {
+                    event = new window.WheelEvent('mousewheel');
+                    expect(EventSource.isWheel(event)).toBe(true);
+                });
+            });
+        }
+    });
+});

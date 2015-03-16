@@ -64,7 +64,7 @@ define(function(require) {
          * The device has touch events
          * @type {boolean}
          */
-        this.hasTouch = ('ontouchstart' in window) || window.navigator.userAgent.match(ieTouchRegex);
+        this.hasTouch = ('ontouchstart' in window) || !!window.navigator.userAgent.match(ieTouchRegex);
 
         /**
          * The device is a mobile device
