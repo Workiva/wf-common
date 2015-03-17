@@ -35,6 +35,11 @@ define(function(require) {
     if (!canCreateEvent || !window.PointerEvent) {
         pointerEventsAvailable = false;
     }
+    // IE is intermittently failing on document.createEvent.  I cannot figure out why.
+    // http://stackoverflow.com/questions/29105596/why-does-document-createeventevent-intermittently-error-with-object-expecte
+    // So, disabling pointer event testing for now.
+    pointerEventsAvailable = false;
+
 
     // Touch events are not newable in Chrome 41 unless you have mobile emulation, or a touch
     // device.  FF 36 seems unable to new up a TouchEvent, also.  We 'cheat' and set the
