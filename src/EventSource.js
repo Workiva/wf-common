@@ -32,6 +32,8 @@ define(function() {
      */
     function checkEventType(event, type) {
         var match = false;
+        var browserEvent = event;
+
         if (event && type) {
             // We check the constructor, instead of using instanceof, because we cannot make
             // synthetic PointerEvents and TouchEvents right now.  There is an added benefit of not
@@ -40,10 +42,15 @@ define(function() {
 
             // http://stackoverflow.com/questions/29018151/how-do-i-programmatically-create-a-touchevent-in-chrome-41
 
-            // Hammer events have a source property that is the original browser event.
-            if (event.source && event.source.constructor === type) {
-                match = true;
-            } else if (event.constructor === type) {
+            if (event.source) {
+                // Hammer events have a source property that is the original browser event.
+                browserEvent = event.source;
+            } else if (event.nativeEvent) {
+                // React events have a nativeEvent property that is the original browser event.
+                browserEvent = event.nativeEvent
+            }
+
+            if (browserEvent.constructor === type) {
                 match = true;
             }
         }

@@ -71,6 +71,11 @@ define(function(require) {
                     hammerEvent.source = new window.MouseEvent('click');
                     expect(EventSource.isMouse(event)).toBe(true);
                 });
+                it('should descend into a reactjs event to detect the original source', function() {
+                    var reactEvent = {};
+                    reactEvent.nativeEvent = new window.MouseEvent('click');
+                    expect(EventSource.isMouse(event)).toBe(true);
+                });
             }
 
             if (pointerEventsAvailable) {
