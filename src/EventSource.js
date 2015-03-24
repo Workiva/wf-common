@@ -47,7 +47,7 @@ define(function() {
                 browserEvent = event.source;
             } else if (event.nativeEvent) {
                 // React events have a nativeEvent property that is the original browser event.
-                browserEvent = event.nativeEvent
+                browserEvent = event.nativeEvent;
             }
 
             if (browserEvent.constructor === type) {
