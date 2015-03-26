@@ -43,7 +43,7 @@ define(function(require) {
 
     // Touch events are not newable in Chrome 41 unless you have mobile emulation, or a touch
     // device.  FF 36 seems unable to new up a TouchEvent, also.  We 'cheat' and set the
-    // constructure to a TouchEvent.
+    // constructor to a TouchEvent.
     var touchEventsAvailable = true;
     if (!uiEventsNewable || !window.TouchEvent) {
         touchEventsAvailable = false;
@@ -54,6 +54,12 @@ define(function(require) {
         testEvent = new window.WheelEvent('mousewheel');
     } catch (e) {
         wheelEventsNewable = false;
+    }
+
+    function createPointerEvent() {
+        var event = document.createEvent('Event');
+        event.constructor = window.PointerEvent;
+        return event;
     }
 
 
@@ -80,14 +86,12 @@ define(function(require) {
 
             if (pointerEventsAvailable) {
                 it('should detect a PointerEvent, with a pointer type of mouse, as a MouseEvent', function() {
-                    event = document.createEvent('Event');
-                    event.constructor = window.PointerEvent;
+                    event = createPointerEvent();
                     event.pointerType = 'mouse';
                     expect(EventSource.isMouse(event)).toBe(true);
                 });
                 it('should detect a PointerEvent, with a pointer type of pen, as a MouseEvent', function() {
-                    event = document.createEvent('Event');
-                    event.constructor = window.PointerEvent;
+                    event = createPointerEvent();
                     event.pointerType = 'pen';
                     expect(EventSource.isMouse(event)).toBe(true);
                 });
@@ -97,8 +101,7 @@ define(function(require) {
         if (pointerEventsAvailable) {
             describe('isPointer', function() {
                 it('should detect a PointerEvent', function() {
-                    event = document.createEvent('Event');
-                    event.constructor = window.PointerEvent;
+                    event = createPointerEvent();
                     expect(EventSource.isPointer(event)).toBe(true);
                 });
             });
@@ -115,8 +118,7 @@ define(function(require) {
 
             if (pointerEventsAvailable) {
                 it('should detect a PointerEvent, with a pointer type of touch, as a TouchEvent', function() {
-                    event = document.createEvent('Event');
-                    event.constructor = window.PointerEvent;
+                    event = createPointerEvent();
                     event.pointerType = 'touch';
                     expect(EventSource.isTouch(event)).toBe(true);
                 });

@@ -59,7 +59,7 @@ define(function() {
     }
 
     /**
-     * Static functions that provide a easy way to tell what type of event you have.
+     * Static functions that provide an easy way to tell what type of event you have.
      *
      * If you are wondering why this file looks like it has no coverage in Istanbul, it is because
      * most of the unit tests do not run in phantom.
