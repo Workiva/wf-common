@@ -106,6 +106,21 @@ define([
                 expect(collection._collection).toEqual(['a value','c value']);
             });
 
+            it('should return index of given value', function() {
+                collection.append('a value');
+                collection.append('b value');
+
+                expect(collection.indexOf('a value')).toEqual(0);
+
+            });
+
+            it('should return -1 if value is not in collection', function() {
+                collection.append('a value');
+                collection.append('b value');
+
+                expect(collection.indexOf('z value')).toEqual(-1);
+            });
+
             it('should emit a RESET event when it is reset', function() {
                 collection.reset(['a', 'b', 'c']);
                 expect(listener.onChangedHandler).toHaveBeenCalledWith(
