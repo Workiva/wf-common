@@ -23,10 +23,10 @@ module.exports = function(grunt) {
             },
             wwwPort: 9200,
             coverageThresholds: {
-                statements: 85,
-                branches: 75,
-                functions: 80,
-                lines: 85
+                statements: 80,
+                branches: 70,
+                functions: 75,
+                lines: 80
             },
         }
     });
