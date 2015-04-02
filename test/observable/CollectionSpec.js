@@ -111,7 +111,6 @@ define([
                 collection.append('b value');
 
                 expect(collection.indexOf('a value')).toEqual(0);
-
             });
 
             it('should return -1 if value is not in collection', function() {
