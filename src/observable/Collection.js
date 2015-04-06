@@ -87,6 +87,9 @@ define([
         sizeOf: function() {
             return this._collection.length;
         },
+        indexOf: function(item) {
+            return this._collection.indexOf(item);
+        },
         _onItemChangedHandler: function(item, property, oldValue, newValue) {
             this.onChanged.dispatch([this, EVENTS.ITEM_CHANGED, [item, property, oldValue, newValue]]);
         },
