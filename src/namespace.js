@@ -42,6 +42,6 @@ define(function() {
         }
         return object;
     }
-    ns('wk.ns', ns);
+
     return ns;
 });
