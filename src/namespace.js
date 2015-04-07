@@ -17,7 +17,7 @@
 define(function() {
     'use strict';
 
-    /* jshint global window */
+    /* global window */
 
     /**
      * Sets the object on window under a namespaced dot separated path
@@ -32,7 +32,7 @@ define(function() {
         var pieces = (path || '').split('.');
         var addTo = window;
         if (pieces.length > 0) {
-            name = pieces.pop();
+            var name = pieces.pop();
             for (var i = 0; i < pieces.length; i++) {
                 var piece = pieces[i];
                 addTo[piece] = addTo[piece] || Object.create(null);
