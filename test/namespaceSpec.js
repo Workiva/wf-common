@@ -57,5 +57,15 @@ define(function(require) {
             var result = ns('it3.should.be.here', obj);
             expect(result).toBe(obj);
         });
+
+        it('should remove all non alpha-numerics besides $_', function() {
+            ns('!@#%^&*()_$+=-,./<>?:";\'[]{}\\|abc123', obj);
+            expect(window._$.abc123).toBe(obj);
+        });
+
+        it('should do nothing if the path is empty', function() {
+            var result = ns('', obj);
+            expect(result).toBeUndefined();
+        });
     });
 });

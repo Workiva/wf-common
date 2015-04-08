@@ -26,10 +26,16 @@ define(function() {
      *         Example: ns('path1.path2.ObjectName', obj);
      *         Example: ns('MyObject', obj); // places it directly on window
      * @param  {Object} object the object to set
-     * @return {Object} the original object parameter
+     * @return {Object} the original object parameter or undefined if it was
+     *                  unable to set it on window (empty path for example)
      */
-    function ns(path, object) {
-        var pieces = (path || '').split('.');
+    function namespace(path, object) {
+        // replace everything but alphanumeric, $ _ and .
+        // . will be split out ensuring valid js identifiers
+        var pieces = (path || '').replace(/[^a-z0-9$_.]/gi,'').split('.');
+        if (pieces.length === 0 || pieces[0] === '') {
+            return undefined;
+        }
         var addTo = window;
         if (pieces.length > 0) {
             var name = pieces.pop();
@@ -43,5 +49,5 @@ define(function() {
         return object;
     }
 
-    return ns;
+    return namespace;
 });
