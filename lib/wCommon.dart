@@ -1,4 +1,4 @@
 library wCommon;
 import 'dart:js';
 
-part 'js_observables.dart';
+part 'js_observable.dart';
