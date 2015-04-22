@@ -73,6 +73,9 @@ define(function() {
 
     EventSource.isMouse = function (event) {
         var result = false;
+        if (!event) {
+            return result;
+        }
         var pType = event.pointerType;
 
         if (EventSource.isPointer(event)) {
