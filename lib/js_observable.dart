@@ -1,19 +1,10 @@
 part of wCommon;
 
-class JsObservableProxy {
+class Observable {
 
   JsFunction _jsObservable; // the Observable instance in JS land
 
-  JsObservableProxy(JsFunction this._jsObservable);
-
-// TODO Future: Allow creating a new JS observable
-// Requires the JS Observable constructor on window somewhere
-//  JsObservableProxy([scope]) {
-//    _jsObservable = new JsObject(context['Observable'], [
-//      scope != null ? new JsObject.jsify(scope) : null
-//    ]);
-//  }
-
+  Observable(JsFunction this._jsObservable);
 
   add(Function fn) {
     _jsObservable.apply([fn]);
