@@ -101,7 +101,6 @@ define(function() {
             var observable = function(fn) {
                 callbacks.push(fn);
             };
-            observable.add = observable;
             observable.id = count++;
 
             //---------------------------------------------------------
