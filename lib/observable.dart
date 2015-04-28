@@ -12,20 +12,20 @@ class Observable {
     return _streamController.stream;
   }
 
-  _add(Function fn) {
+  void _add(Function fn) {
     _jsObservable.apply([fn]);
   }
 
- _remove(Function fn) {
+ void _remove(Function fn) {
    _jsObservable.callMethod('remove', [fn]);
  }
 
-  dispatch([List<Object> parameters, Function observed]) {
-    _jsObservable.callMethod('dispatch', [
-      parameters != null ? new JsObject.jsify(parameters) : [],
-      observed
-    ]);
-  }
+ void dispatch([List<Object> parameters, Function observed]) {
+   _jsObservable.callMethod('dispatch', [
+     parameters != null ? new JsObject.jsify(parameters) : [],
+     observed
+   ]);
+ }
 
   void _addToStream([a, b, c, d, e, f, g, h, i, j, k]) {
     List params = [];

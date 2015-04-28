@@ -4,3 +4,7 @@ author: Rob Becker
 description: Dart bindings for wf-common
 dependencies:
 dev_dependencies:
+  unittest: any
+  mock: any
+  mockito: any
+  guinness: any
