@@ -16,16 +16,15 @@ class Observable {
     _jsObservable.apply([fn]);
   }
 
- void _remove(Function fn) {
-   _jsObservable.callMethod('remove', [fn]);
- }
+  void _remove(Function fn) {
+    _jsObservable.callMethod('remove', [fn]);
+  }
 
- void dispatch([List<Object> parameters, Function observed]) {
-   _jsObservable.callMethod('dispatch', [
-     parameters != null ? new JsObject.jsify(parameters) : [],
-     observed
-   ]);
- }
+  void dispatch([List<Object> parameters, Function observed]) {
+    _jsObservable.callMethod(
+        'dispatch',
+        [parameters != null ? new JsObject.jsify(parameters) : [], observed]);
+  }
 
   void _addToStream([a, b, c, d, e, f, g, h, i, j, k]) {
     List params = [];
@@ -44,7 +43,7 @@ class Observable {
     params.add(j);
     params.add(k);
 
-    params.reversed.forEach( (p) {
+    params.reversed.forEach((p) {
       if (p != null || found) {
         vars.add(p);
         found = true;

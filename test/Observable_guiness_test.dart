@@ -10,7 +10,7 @@ import 'dart:async';
 import 'dart:js';
 import 'package:wCommon/wCommon.dart';
 
-class MockJsObject extends SpyObject implements JsObject {}
+class MockJsObject extends SpyObject {}
 
 main() {
 

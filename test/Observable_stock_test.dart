@@ -10,14 +10,14 @@ import 'dart:async';
 import 'dart:js';
 import 'package:wCommon/wCommon.dart';
 
-class MockJsObject extends Mock implements JsObject {}
+class MockJsObject extends Mock {}
 
 main() {
 
   useHtmlEnhancedConfiguration();
 
   var observable;
-  MockJsObject jsObservable;
+  var jsObservable;
 
   group('Observable', () {
 
@@ -30,7 +30,7 @@ main() {
     test('it should return a stream for the stream property', () {
       var stream = observable.stream;
 
-      expect(stream, new isInstanceOf<Stream>() );
+      expect(stream, new isInstanceOf<Stream>());
     });
 
     test('it should proxy calls to the dispatch method down to the jsObservable', () {
