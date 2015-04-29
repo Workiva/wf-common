@@ -7,11 +7,8 @@ before_install:
 - npm install -g grunt-cli
 install:
 - ./init.sh
-script:
+after_script:
 - grunt ci
-- pub get
-- pub global activate test_runner
-- pub global run test_runner
 env:
   global:
   - secure: XCtQ9d6AoTDaV0tMWptBFw4hbl1OH6WQGVsUXzKr8c1e3tDpqOtyCyM+I2eesrLffPAl0h7QLZBRDb1RjiISzyesy9rgRnGqeHISg1goST/ozZfpkmMvQlfUl6OnQHZh0CDk+zSVoJ//QhGMIBeRBF9l1WGBiNNAVM0W0hw/xUI=
