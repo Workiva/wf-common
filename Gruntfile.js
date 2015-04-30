@@ -1,6 +1,11 @@
 module.exports = function(grunt) {
 
     require('wf-grunt').init(grunt, {
+        jshint: {
+            test: {
+                src: ['test/**/*.js', '!**/packages/**']
+            }
+        },
         options: {
             sauceLabs: {
                 buildNumber: process.env.TRAVIS_BUILD_NUMBER,
