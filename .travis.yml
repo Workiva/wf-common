@@ -5,9 +5,8 @@ with_content_shell: true
 before_install:
 - npm install -g bower
 - npm install -g grunt-cli
-install:
+before_script:
 - ./init.sh
-after_script:
 - grunt ci
 env:
   global:
