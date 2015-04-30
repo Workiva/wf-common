@@ -1,5 +1,8 @@
 library wCommon.test;
 
+// This is a working example of Dart unit tests using the guinness library.  It tests the same
+// functionality as Observable_stock_test.dart.
+
 // Testing imports
 import 'package:guinness/guinness.dart';
 import 'package:unittest/html_enhanced_config.dart';

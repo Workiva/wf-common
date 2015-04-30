@@ -1,5 +1,10 @@
 library wCommon.test;
 
+// This is a working example of Dart unit tests using the Dart unittest library.  It appears that
+// unittest is being replaced with just test, but test is not fully baked currently.  There are
+// other examples that test the same functionality using different libraries.  Those examples are
+// in Observable_guinness_test and Observable_mockito_test.dart
+
 // Testing imports
 import 'package:unittest/unittest.dart';
 import 'package:mock/mock.dart';
