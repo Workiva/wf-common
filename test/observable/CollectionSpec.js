@@ -66,6 +66,14 @@ define([
             expect(collection.getItemAt(0)).toEqual('a');
         });
 
+        describe('toArray', function() {
+            it('should return the internal collection as an array', function() {
+                var sourceArray =['a', 'b', 'c'];
+                var collection = new Collection(sourceArray);
+                expect(collection.toArray()).toBe(sourceArray);
+            });
+        });
+
         describe('provides collection events and', function() {
             var collection, listener;
             beforeEach(function() {
