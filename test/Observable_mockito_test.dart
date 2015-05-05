@@ -1,8 +1,5 @@
 library wCommon.test;
 
-// This is a working example of Dart unit tests using the mockito mocking library and unittest for
-// assertions.  It tests the same functionality as Observable_stock_test.dart.
-
 // Testing imports
 import 'package:unittest/unittest.dart';
 import 'package:mockito/mockito.dart';
@@ -42,7 +39,6 @@ main() {
 
       observable.dispatch(params, callback);
 
-      // This should be matching the arguments, but it is not.  Bug in Mockito?
       verify(jsObservable.callMethod('dispatch', [params, callback])).called(1);
     });
   });

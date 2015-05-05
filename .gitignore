@@ -13,3 +13,5 @@ npm_debug.log
 *.log
 
 .DS_Store
+packages/
+pubspec.lock
