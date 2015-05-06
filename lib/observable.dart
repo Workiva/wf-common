@@ -14,7 +14,7 @@ class Observable {
 
   void _add(Function callback) {
     // The jsObservable is an object that also works as a function.  So, we are calling the jsObservable as a
-    // function, and passing in the callback to that function.  See the Observable.j file.
+    // function, and passing in the callback to that function.  See the Observable.js file.
     _jsObservable.apply([callback]);
   }
 
