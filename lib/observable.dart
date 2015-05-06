@@ -12,12 +12,14 @@ class Observable {
     return _streamController.stream;
   }
 
-  void _add(Function fn) {
-    _jsObservable.apply([fn]);
+  void _add(Function callback) {
+    // The jsObservable is an object that also works as a function.  So, we are calling the jsObservable as a
+    // function, and passing in the callback to that function.  See the Observable.j file.
+    _jsObservable.apply([callback]);
   }
 
-  void _remove(Function fn) {
-    _jsObservable.callMethod('remove', [fn]);
+  void _remove(Function callback) {
+    _jsObservable.callMethod('remove', [callback]);
   }
 
   void dispatch([List<Object> parameters, Function observed]) {
