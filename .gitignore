@@ -16,3 +16,4 @@ npm_debug.log
 packages/
 pubspec.lock
 .pub/
+dartdoc-viewer/
