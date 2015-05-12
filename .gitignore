@@ -13,3 +13,6 @@ npm_debug.log
 *.log
 
 .DS_Store
+packages/
+.pub/
+dartdoc-viewer/

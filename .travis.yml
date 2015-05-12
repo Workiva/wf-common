@@ -1,13 +1,15 @@
-language: node_js
-node_js:
-- '0.10'
+language: dart
+dart:
+- stable
+with_content_shell: true
 before_install:
 - npm install -g bower
 - npm install -g grunt-cli
-install:
-- ./init.sh
-script:
+- npm install
+- bower install
+before_script:
 - grunt ci
+- dartanalyzer lib/wCommon.dart
 env:
   global:
   - secure: XCtQ9d6AoTDaV0tMWptBFw4hbl1OH6WQGVsUXzKr8c1e3tDpqOtyCyM+I2eesrLffPAl0h7QLZBRDb1RjiISzyesy9rgRnGqeHISg1goST/ozZfpkmMvQlfUl6OnQHZh0CDk+zSVoJ//QhGMIBeRBF9l1WGBiNNAVM0W0hw/xUI=

@@ -97,6 +97,9 @@ define([
             this.onChanged.dispose();
             this._onItemChangedHandlerBound = null;
             this._collection = null;
+        },
+        toArray: function() {
+            return this._collection;
         }
     };
 
