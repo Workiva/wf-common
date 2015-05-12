@@ -2,5 +2,5 @@ name: wCommon
 description: Dart bindings for wf-common
 dependencies:
 dev_dependencies:
-  unittest: '>=0.11.0 <0.11.6'
+  unittest: '0.11.5+4'
   mockito: '>=0.8.2'
