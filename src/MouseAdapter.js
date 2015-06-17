@@ -247,7 +247,7 @@ define(function(require) {
      * For example: 
      *   getDeltaArrayIndex(0) will return the index of the oldest data point
      *   getDeltaArrayIndex(DELTA_ARRAY_SIZE-1) will return the most recent data index.
-     *   getDeltaArrayIndex(-1) will also return the most recent data point index.
+     *   getDeltaArrayIndex(-1) will return the most recent data point index.
      *   getDeltaArrayIndex(-DELTA_ARRAY_SIZE) will return the oldest data point index.
      * @type {Function}
      */
@@ -322,6 +322,10 @@ define(function(require) {
         this._debouncedDispatchMouseWheelEnd = FunctionUtil.debounce(
             this._dispatchMouseWheelEnd.bind(this), 100);
 
+        /**
+         * Throttled dispatcher for user initiated re-scroll events.
+         * @type {Function}
+         */
         this._throttledDispatchUserReScroll = _.throttle(
             this._dispatchUserReScroll.bind(this), 50);
 
@@ -388,8 +392,12 @@ define(function(require) {
             this._debouncedDispatchMouseWheelEnd(event);            
         },
 
+        /**
+         * Dispatches the MouseWheel start event, and handles related controls.
+         * @param {object} event
+         * @private
+         */
         _dispatchMouseWheelStart: function(event) {
-            //console.log('Start!');
             this.onMouseWheelStart.dispatch([{
                 distance: { x: 0, y: 0 },
                 source: event
@@ -397,11 +405,17 @@ define(function(require) {
             this._wheeling = true;
         },
 
+        /**
+         * Dispatches the MouseWheel end event, and handles related controls.
+         * @param {object} event
+         * @private
+         */
         _dispatchMouseWheelEnd: function(event) {
-            //console.log('End!');
+
+            // Reset the delta array on MouseEnd to prevent false positives between
+            // natural end and start events.
             deltaArray = [[],[]];
-            //console.log(this.str);
-            //this.str = '';
+
             this.onMouseWheelEnd.dispatch([{
                 distance: { x: 0, y: 0 },
                 source: event
@@ -409,6 +423,15 @@ define(function(require) {
             this._wheeling = false;
         },
 
+
+        /**
+         * Perform a ReScroll dispatch, which currently means dispatch a MouseEnd event 
+         * followed by a MouseStart event, to alert listeners that the user performed a
+         * new distinct scroll event.  This could easily be refactored into a separate
+         * observable if desired in the future.
+         * @param {object} event
+         * @private
+         */
         _dispatchUserReScroll: function(event) {
             this._dispatchMouseWheelEnd(event);
             this._dispatchMouseWheelStart(event);
@@ -473,7 +496,7 @@ define(function(require) {
                 detectDeltaIncrease(DELTA_INDEX.x) ||
                 detectDeltaIncrease(DELTA_INDEX.y);
 
-            if ( detected ) {
+            if (detected) {
                 this._throttledDispatchUserReScroll(event.source)
             }
         }
