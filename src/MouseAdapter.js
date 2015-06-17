@@ -571,7 +571,7 @@ define(function(require) {
                 detectDeltaIncrease(DELTA_INDEX.x);
 
             if (detected) {
-                this._throttledDispatchUserReScroll(event.source);
+                this._throttledDispatchUserReScroll(normalizedEvent.source);
             }
         }
     };
