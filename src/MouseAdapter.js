@@ -201,9 +201,72 @@ define(function(require) {
         };
     }
 
-    var deltaArray = [];
-    var deltaArraySize = 20;
+    //---------------------------------------------------------
+    // The Scroll-detection mechanism depends on collecting and storing a small buffer 
+    // of scroll history in order to analyze and interpret it for patterns.
+    //---------------------------------------------------------
+
+    /**
+     * A constant which represents the maximum amount of data buffered.  That is, when 
+     * this value is N, the N most recent data points are preserved.  Beyond that, data 
+     * is overwritten.  This should only be large enough to hold the desired amount of 
+     * data and not any larger to preserve memory.
+     * @type {number}
+     */
+    var DELTA_ARRAY_SIZE = 10;
+    
+    /**
+     * A two dimensional array of size [2][DELTA_ARRAY_SIZE] which holds data captured.  
+     * It holds separate data for the X- and Y-axis, hence the 2.  Constants have been 
+     * created for accessing the array for clarity.
+     * @type {Array.<Array.<number>>}
+     */
+    var deltaArray = [[],[]];
+    
+    /**
+     * An index which always refers to the first (oldest) data point
+     * in the array.  It also represents the point that will be overwritten by new data.
+     * @type {number}
+     */
     var deltaArrayIndex = 0;
+    
+    /**
+     * A constant provided for accessing the X and Y arrays of data.
+     * @type {number}
+     */
+    var DELTA_INDEX = {
+        x: 0,
+        y: 1
+    };
+
+    /**
+     * A helper function for calculating the index of the desired data given its 
+     * relative index.  Negative numbers can be used to access the N'th most recent
+     * data point.
+     *
+     * For example: 
+     *   getDeltaArrayIndex(0) will return the index of the oldest data point
+     *   getDeltaArrayIndex(DELTA_ARRAY_SIZE-1) will return the most recent data index.
+     *   getDeltaArrayIndex(-1) will also return the most recent data point index.
+     *   getDeltaArrayIndex(-DELTA_ARRAY_SIZE) will return the oldest data point index.
+     * @type {Function}
+     */
+    var getDeltaArrayIndex = function(index) {
+        var result = (deltaArrayIndex+index);
+        if (index < 0) {
+            if (index < -DELTA_ARRAY_SIZE) {
+                throw new Error('Array index out of bounds!');
+            }
+            result += DELTA_ARRAY_SIZE;
+        }
+        else {
+            if (index >= DELTA_ARRAY_SIZE) {
+                throw new Error('Array index out of bounds!');
+            }
+        }
+        result = result % DELTA_ARRAY_SIZE;
+        return result
+    } 
 
     //---------------------------------------------------------
     //
@@ -336,7 +399,7 @@ define(function(require) {
 
         _dispatchMouseWheelEnd: function(event) {
             //console.log('End!');
-            deltaArray = [];
+            deltaArray = [[],[]];
             //console.log(this.str);
             //this.str = '';
             this.onMouseWheelEnd.dispatch([{
@@ -352,6 +415,7 @@ define(function(require) {
         },
 
         _detectUserScroll: function(normalizedEvent) {
+
             // This is a lightweight helper function which takes in a set of consecutive
             // linear data and tries to determine whether it is increasing or decreasing.
             var calculateDeltaDirection = function(array,arrayMaxLength,startAt,length) {
@@ -373,73 +437,44 @@ define(function(require) {
                 return 0; // Stable
             }
 
+            var detectNegativeSpike = function(axis) {
+                var lastPoint = getDeltaArrayIndex(-1);
+                if ( deltaArray[axis][lastPoint] <= 5 ) {
+                    var recentPoint2 = getDeltaArrayIndex(-2);
+                    var recentPoint3 = getDeltaArrayIndex(-3);
+                    if ((deltaArray[axis][recentPoint2] / deltaArray[axis][lastPoint] > 2 &&
+                         deltaArray[axis][recentPoint2] - deltaArray[axis][lastPoint] > 2) &&
+                        (deltaArray[axis][recentPoint3] / deltaArray[axis][lastPoint] > 2 &&
+                         deltaArray[axis][recentPoint3] - deltaArray[axis][lastPoint] > 2))
+                        return true;
+                }
+                return false;
+            };
 
-            if (!this.flip) this.flip = 0;
-            if (!this.detected) this.detected = 0;
-            if (!this.str) this.str = '';
-            //var delta = event.deltaX;
-            //var delta = event.deltaY;
-            var delta = Math.abs(normalizedEvent.distance.y);
-            deltaArray[deltaArrayIndex] = delta;
-            deltaArrayIndex = (deltaArrayIndex+1) % deltaArraySize;
-            var string = '';
-            //for ( var i = Math.abs(delta)/2; i >= 0 ; i-- ) string += " ";
-            //string += Math.round(delta);
-            string += delta;
-            this.flip = 1-this.flip;
-            if ( this.flip === 0 ) string += " ";
-            var dir = calculateDeltaDirection(deltaArray,deltaArraySize,deltaArrayIndex,3);
-            if ( dir === 1 ) string += " \tIncreasing"
-            if ( dir === -1 ) string += " \tDecreasing"
-            if ( dir === 0 ) string += " \tNeutral"
-            //console.log(string);
-            this.str += string+'\n';
+            var detectDeltaIncrease = function(axis) {
+                var firstRange = getDeltaArrayIndex(-5);
+                if ( calculateDeltaDirection(deltaArray[axis],DELTA_ARRAY_SIZE,firstRange,5) === 1 ) {
+                    var secondRange = getDeltaArrayIndex(-10);
+                    if ( calculateDeltaDirection(deltaArray[axis],DELTA_ARRAY_SIZE,secondRange,5) === -1 ) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            deltaArray[DELTA_INDEX.y][deltaArrayIndex] = Math.abs(normalizedEvent.distance.y);
+            deltaArray[DELTA_INDEX.x][deltaArrayIndex] = Math.abs(normalizedEvent.distance.x);
+            deltaArrayIndex = (deltaArrayIndex+1) % DELTA_ARRAY_SIZE;
 
             // Detection
-            var detected = '';
-            /* Method 1
-            if ( dir === 1 && deltaArray[deltaArrayIndex] <= 5 )
-                console.log("Detected -- Method #1");
-            /* */
+            var detected = 
+                detectNegativeSpike(DELTA_INDEX.x) ||
+                detectNegativeSpike(DELTA_INDEX.y) ||
+                detectDeltaIncrease(DELTA_INDEX.x) ||
+                detectDeltaIncrease(DELTA_INDEX.y);
 
-            //* Method 2
-            var idx1 = (deltaArrayIndex+deltaArraySize-1) % deltaArraySize;
-            if ( deltaArray[idx1] <= 5 ) {
-                var idx2 = (deltaArrayIndex+deltaArraySize-2) % deltaArraySize;
-                var idx3 = (deltaArrayIndex+deltaArraySize-3) % deltaArraySize;
-                if (( deltaArray[idx2]/deltaArray[idx1] > 2 &&
-                     deltaArray[idx2]-deltaArray[idx1] > 2) &&
-                    ( deltaArray[idx3]/deltaArray[idx1] > 2 &&
-                     deltaArray[idx3]-deltaArray[idx1] > 2))
-                    detected += "Detected -- Method #2\t\t";
-            }
-            /* */
-
-            //* Method 3
-            var idx1 = (deltaArrayIndex+deltaArraySize-5) % deltaArraySize;
-            if ( calculateDeltaDirection(deltaArray,deltaArraySize,idx1,5) === 1 ) {
-                var idx2 = (deltaArrayIndex+deltaArraySize-10) % deltaArraySize;
-                if ( calculateDeltaDirection(deltaArray,deltaArraySize,idx2,5) === -1 ) {
-                    detected += '[('+idx1+')Inc:';
-                    for ( var i = 0; i < 5; i++ )
-                        detected += deltaArray[(idx1+i) % deltaArraySize] + ', ';
-                    detected += '][('+idx2+')Dec:';
-                    for ( var i = 0; i < 5; i++ )
-                        detected += deltaArray[(idx2+i) % deltaArraySize] + ', ';
-                    detected += ']';
-                    detected += "Detected -- Method #3\t\t";
-                    //console.log(deltaArray);
-                }
-            }
-            /* */
-
-            if ( detected !== '' && this.detected === 0 ) {
-                //console.log(detected);
+            if ( detected ) {
                 this._throttledDispatchUserReScroll(event.source)
-                this.detected = 1;
-            }
-            if ( detected === '' && this.detected === 1 ) {
-                this.detected = 0;
             }
         }
     };
