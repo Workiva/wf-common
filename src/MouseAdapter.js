@@ -446,7 +446,7 @@ define(function(require) {
          * @param {object} normalizedEvent
          * @private
          */
-         _detectUserScroll: function(normalizedEvent) {
+        _detectUserScroll: function(normalizedEvent) {
 
             /**
              * This is a helper function which takes in a set of consecutive linear data 
@@ -519,7 +519,7 @@ define(function(require) {
                     }
                 }
                 return false;
-            };            
+            };
 
             /**
              * This is a helper function for detecting user scroll events.  When the user
@@ -559,9 +559,10 @@ define(function(require) {
                 return false;
             };
 
+            // Store the newest data point in the history array, overwriting the oldest.
             deltaArray[DELTA_INDEX.y][deltaArrayIndex] = Math.abs(normalizedEvent.distance.y);
             deltaArray[DELTA_INDEX.x][deltaArrayIndex] = Math.abs(normalizedEvent.distance.x);
-            deltaArrayIndex = (deltaArrayIndex+1) % DELTA_ARRAY_SIZE;
+            deltaArrayIndex = (deltaArrayIndex+1) % DELTA_ARRAY_SIZE; // Increment index
 
             var detected =
                 detectNegativeSpike(DELTA_INDEX.y) ||
