@@ -211,6 +211,9 @@ define(function(require) {
      * this value is N, the N most recent data points are preserved.  Beyond that, data 
      * is overwritten.  This should only be large enough to hold the desired amount of 
      * data and not any larger to preserve memory.
+     *
+     * This number is 10 because one detection method (_detectUserScroll.detectDeltaIncrease)
+     * uses the last 10 data points to determine whether a scroll was performed.
      * @type {number}
      */
     var DELTA_ARRAY_SIZE = 10;
@@ -250,6 +253,7 @@ define(function(require) {
      *   getDeltaArrayIndex(-1) will return the most recent data point index.
      *   getDeltaArrayIndex(-DELTA_ARRAY_SIZE) will return the oldest data point index.
      * @type {Function}
+     * @return {number} The properly offset index of the requested data point.
      */
     var getDeltaArrayIndex = function(index) {
         var result = (deltaArrayIndex+index);
@@ -265,8 +269,8 @@ define(function(require) {
             }
         }
         result = result % DELTA_ARRAY_SIZE;
-        return result
-    } 
+        return result;
+    };
 
     //---------------------------------------------------------
     //
@@ -320,7 +324,7 @@ define(function(require) {
          * @type {Function}
          */
         this._debouncedDispatchMouseWheelEnd = FunctionUtil.debounce(
-            this._dispatchMouseWheelEnd.bind(this), 100);
+            this._dispatchMouseWheelEnd.bind(this), 80);
 
         /**
          * Throttled dispatcher for user initiated re-scroll events.
@@ -379,7 +383,7 @@ define(function(require) {
         _onMouseWheel: function(event) {
             // If we haven't started a mouse wheel for a bit, publish a start event.
             if (!this._wheeling) {
-                this._dispatchMouseWheelStart(event)
+                this._dispatchMouseWheelStart(event);
             }
 
             // Normalize the mouse wheel event and publish.
@@ -389,7 +393,7 @@ define(function(require) {
 
             // Debounce mouse wheels so that an end event is published 50ms
             // after the last mousewheel occured.
-            this._debouncedDispatchMouseWheelEnd(event);            
+            this._debouncedDispatchMouseWheelEnd(event);
         },
 
         /**
@@ -437,48 +441,118 @@ define(function(require) {
             this._dispatchMouseWheelStart(event);
         },
 
-        _detectUserScroll: function(normalizedEvent) {
+        /**
+         * Detect when the user performs a new scroll gesture.
+         * @param {object} normalizedEvent
+         * @private
+         */
+         _detectUserScroll: function(normalizedEvent) {
 
-            // This is a lightweight helper function which takes in a set of consecutive
-            // linear data and tries to determine whether it is increasing or decreasing.
-            var calculateDeltaDirection = function(array,arrayMaxLength,startAt,length) {
+            /**
+             * This is a helper function which takes in a set of consecutive linear data 
+             * and tries to determine whether it is increasing or decreasing.  It can
+             * operate on an entire array, or only a specified section of it. When given a
+             * starting point and a length that extends outside the boundaries of the array,
+             * the function assumes the data wraps around to the beginning of the array.
+             * @param {Array.<number>} array The array of data to perform analysis on.
+             * @param {number} arrayMaxLength [optional] The max length of the array.  If
+             * not given, assumed to be array.length
+             * @param {number} startAt [optional] The index in the array where the target 
+             * data begins.  If not specified, assumes this index is 0.
+             * @param {number} length [optional] The number of data points to examine.  
+             * If not specified, assumed to be the entire array length.
+             * @return {number} Returns:
+                    1 if data appears to be increasing
+                   -1 if data appears to be decreasing
+                    0 if there is no discernable trend.
+             */
+            var calculateDeltaDirection = function(array,startAt,length,arrayMaxLength) {
                 arrayMaxLength = arrayMaxLength || array.length;
                 startAt = startAt || 0;
-                length = length || array.length;
+                length = length || arrayMaxLength;
                 var total = 0;
                 var offsetIdx1,offsetIdx2;
-                for ( var idx1 = 0; idx1 < length; idx1++ ) {
-                    for ( var idx2 = idx1+1; idx2 < length; idx2++ ) {
+                for (var idx1 = 0; idx1 < length; idx1++) {
+                    for (var idx2 = idx1+1; idx2 < length; idx2++) {
                         offsetIdx1 = (idx1+startAt) % arrayMaxLength;
                         offsetIdx2 = (idx2+startAt) % arrayMaxLength;
-                        if ( array[offsetIdx1] < array[offsetIdx2] ) total += (1/(idx2-idx1));
-                        if ( array[offsetIdx1] > array[offsetIdx2] ) total += (-1/(idx2-idx1));
-                   }
+                        if (array[offsetIdx1] < array[offsetIdx2]) {
+                            total += (1/(idx2-idx1));
+                        }
+                        if (array[offsetIdx1] > array[offsetIdx2]) {
+                            total += (-1/(idx2-idx1));
+                        }
+                    }
                 }
-                if (total >= 1) return 1; // Increasing trend
-                if (total <= -1) return -1; // Decreasing trend
+                if (total >= 1) {
+                    return 1; // Increasing trend
+                }
+                if (total <= -1) {
+                    return -1; // Decreasing trend
+                }
                 return 0; // Stable
-            }
+            };
 
+            /**
+             * This is a helper function for detecting user scroll events.  The scroll deltas
+             * will decay slowly over time, but they typically wont trend upwards again 
+             * unless the user performs another scroll.  Thus, when the scroll deltas are 
+             * trending downward and suddenly begin to increase, this is a strong indication 
+             * of a user event.  This function works by detecting these increases preceded by
+             * a normal decreasing trend.
+             *
+             * One advantage this method has is that it can detect nearly all user events.
+             * One disadvantage this method has is that it can be slow, owing to the fact 
+             * that it may take time (150ms+) to gather enough data before an upward trend is discernable.
+             * @param {DELTA_INDEX} axis The axis on which to perform this check
+             * @return {boolean} Returns true if conditions were satisfied to indicate the
+             * user performed a scroll event, else false
+             */
+            var detectDeltaIncrease = function(axis) {
+                var firstRange = getDeltaArrayIndex(-5);
+                // Check the last 5 data points and determine if they are increasing
+                if (calculateDeltaDirection(deltaArray[axis],firstRange,5,DELTA_ARRAY_SIZE) === 1) {
+                    // Check the 5 data points prior to those and determine if they were decreasing
+                    var secondRange = getDeltaArrayIndex(-10);
+                    if (calculateDeltaDirection(deltaArray[axis],secondRange,5,DELTA_ARRAY_SIZE) === -1) {
+                        return true;
+                    }
+                }
+                return false;
+            };            
+
+            /**
+             * This is a helper function for detecting user scroll events.  When the user
+             * performs a scroll (at least with a track pad), the scroll delta drops to 
+             * nearly 0 before the new momentum is added to the scroll inertia. Because the 
+             * inertia typically decays very slowly over time, a significant decrease in the 
+             * scroll delta is a strong indication of a user event. This function works by 
+             * detecting these negative spikes in the scroll delta.
+             *
+             * One advantage this method has is that it can detect events as soon as they 
+             * occur because it does not take time to collect data.
+             * One disadvantage this method has is that it cannot detect events when the 
+             * the current inertia is below a certain threshold, including really light 
+             * scrolls and scrolls made after the current scroll inertia has decayed a lot.
+             * @param {DELTA_INDEX} axis The axis on which to perform this check
+             * @return {boolean} Returns true if conditions were satisfied to indicate the
+             * user performed a scroll event, else false
+             */
             var detectNegativeSpike = function(axis) {
                 var lastPoint = getDeltaArrayIndex(-1);
-                if ( deltaArray[axis][lastPoint] <= 5 ) {
+                // Check if the current event delta is low.  Nearly all of the negative spikes 
+                // seem to reach between 0.5-2.5, so make sure the point is low enough
+                if (deltaArray[axis][lastPoint] <= 5) {
                     var recentPoint2 = getDeltaArrayIndex(-2);
                     var recentPoint3 = getDeltaArrayIndex(-3);
+                    // Check to see if the previous two points are significantly higher.
+                    // Checks last TWO points instead of just last one because the deltas
+                    // seem to be prone to intermittent noisy spikes which can create false
+                    // positives.
                     if ((deltaArray[axis][recentPoint2] / deltaArray[axis][lastPoint] > 2 &&
                          deltaArray[axis][recentPoint2] - deltaArray[axis][lastPoint] > 2) &&
                         (deltaArray[axis][recentPoint3] / deltaArray[axis][lastPoint] > 2 &&
-                         deltaArray[axis][recentPoint3] - deltaArray[axis][lastPoint] > 2))
-                        return true;
-                }
-                return false;
-            };
-
-            var detectDeltaIncrease = function(axis) {
-                var firstRange = getDeltaArrayIndex(-5);
-                if ( calculateDeltaDirection(deltaArray[axis],DELTA_ARRAY_SIZE,firstRange,5) === 1 ) {
-                    var secondRange = getDeltaArrayIndex(-10);
-                    if ( calculateDeltaDirection(deltaArray[axis],DELTA_ARRAY_SIZE,secondRange,5) === -1 ) {
+                         deltaArray[axis][recentPoint3] - deltaArray[axis][lastPoint] > 2)) {
                         return true;
                     }
                 }
@@ -489,15 +563,14 @@ define(function(require) {
             deltaArray[DELTA_INDEX.x][deltaArrayIndex] = Math.abs(normalizedEvent.distance.x);
             deltaArrayIndex = (deltaArrayIndex+1) % DELTA_ARRAY_SIZE;
 
-            // Detection
-            var detected = 
-                detectNegativeSpike(DELTA_INDEX.x) ||
+            var detected =
                 detectNegativeSpike(DELTA_INDEX.y) ||
-                detectDeltaIncrease(DELTA_INDEX.x) ||
-                detectDeltaIncrease(DELTA_INDEX.y);
+                detectDeltaIncrease(DELTA_INDEX.y) ||
+                detectNegativeSpike(DELTA_INDEX.x) ||
+                detectDeltaIncrease(DELTA_INDEX.x);
 
             if (detected) {
-                this._throttledDispatchUserReScroll(event.source)
+                this._throttledDispatchUserReScroll(event.source);
             }
         }
     };
