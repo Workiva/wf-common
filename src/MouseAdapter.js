@@ -324,14 +324,14 @@ define(function(require) {
          * @type {Function}
          */
         this._debouncedDispatchMouseWheelEnd = FunctionUtil.debounce(
-            this._dispatchMouseWheelEnd.bind(this), 80);
+            this._dispatchMouseWheelEnd.bind(this), 90);
 
         /**
          * Throttled dispatcher for user initiated re-scroll events.
          * @type {Function}
          */
         this._throttledDispatchUserReScroll = _.throttle(
-            this._dispatchUserReScroll.bind(this), 50);
+            this._dispatchUserReScroll.bind(this), 60);
 
         //---------------------------------------------------------
         // Initialization
@@ -462,8 +462,8 @@ define(function(require) {
              * @param {number} length [optional] The number of data points to examine.  
              * If not specified, assumed to be the entire array length.
              * @return {number} Returns:
-                    1 if data appears to be increasing
-                   -1 if data appears to be decreasing
+                    1 if data appears to be increasing.
+                   -1 if data appears to be decreasing.
                     0 if there is no discernable trend.
              */
             var calculateDeltaDirection = function(array,startAt,length,arrayMaxLength) {

@@ -252,7 +252,7 @@ define(function(require) {
             }]);
         });
 
-        it('should dispatch "onMouseWheelEnd" 80ms after the last mouse wheel', function() {
+        it('should dispatch "onMouseWheelEnd" 90ms after the last mouse wheel', function() {
             spyOn(adapter.onMouseWheelEnd, 'dispatch');
             var evt = {
                 currentTarget: target,
@@ -262,7 +262,7 @@ define(function(require) {
                 VERTICAL_AXIS: 'y'
             };
             adapter._onMouseWheel(evt);
-            waits(80);
+            waits(90);
             runs(function() {
                 expect(adapter.onMouseWheelEnd.dispatch).toHaveBeenCalledWith([{
                     distance: { x: 0, y: 0 },
