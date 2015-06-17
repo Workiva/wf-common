@@ -448,7 +448,7 @@ define(function(require) {
          */
         _detectUserScroll: function(normalizedEvent) {
 
-            /**
+            /*
              * This is a helper function which takes in a set of consecutive linear data 
              * and tries to determine whether it is increasing or decreasing.  It can
              * operate on an entire array, or only a specified section of it. When given a
@@ -493,7 +493,7 @@ define(function(require) {
                 return 0; // Stable
             };
 
-            /**
+            /*
              * This is a helper function for detecting user scroll events.  The scroll deltas
              * will decay slowly over time, but they typically wont trend upwards again 
              * unless the user performs another scroll.  Thus, when the scroll deltas are 
@@ -521,7 +521,7 @@ define(function(require) {
                 return false;
             };
 
-            /**
+            /*
              * This is a helper function for detecting user scroll events.  When the user
              * performs a scroll (at least with a track pad), the scroll delta drops to 
              * nearly 0 before the new momentum is added to the scroll inertia. Because the 
