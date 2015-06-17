@@ -17,6 +17,7 @@
 define(function(require) {
     'use strict';
 
+    var _ = require('lodash');
     var BrowserInfo = require('wf-js-common/BrowserInfo');
     var FunctionUtil = require('wf-js-common/FunctionUtil');
     var Observable = require('wf-js-common/Observable');
@@ -200,6 +201,10 @@ define(function(require) {
         };
     }
 
+    var deltaArray = [];
+    var deltaArraySize = 20;
+    var deltaArrayIndex = 0;
+
     //---------------------------------------------------------
     //
     // MouseAdapter definition
@@ -251,13 +256,11 @@ define(function(require) {
          * Debounced dispatcher for mouse wheel end events.
          * @type {Function}
          */
-        this._dispatchMouseWheelEnd = FunctionUtil.debounce(function(event) {
-            this.onMouseWheelEnd.dispatch([{
-                distance: { x: 0, y: 0 },
-                source: event
-            }]);
-            this._wheeling = false;
-        }.bind(this), 50);
+        this._debouncedDispatchMouseWheelEnd = FunctionUtil.debounce(
+            this._dispatchMouseWheelEnd.bind(this), 100);
+
+        this._throttledDispatchUserReScroll = _.throttle(
+            this._dispatchUserReScroll.bind(this), 50);
 
         //---------------------------------------------------------
         // Initialization
@@ -309,20 +312,135 @@ define(function(require) {
         _onMouseWheel: function(event) {
             // If we haven't started a mouse wheel for a bit, publish a start event.
             if (!this._wheeling) {
-                this.onMouseWheelStart.dispatch([{
-                    distance: { x: 0, y: 0 },
-                    source: event
-                }]);
-                this._wheeling = true;
+                this._dispatchMouseWheelStart(event)
             }
 
             // Normalize the mouse wheel event and publish.
             var normalizedEvent = normalizeEvent(event);
+            this._detectUserScroll(normalizedEvent);
             this.onMouseWheel.dispatch([normalizedEvent]);
 
             // Debounce mouse wheels so that an end event is published 50ms
             // after the last mousewheel occured.
+            this._debouncedDispatchMouseWheelEnd(event);            
+        },
+
+        _dispatchMouseWheelStart: function(event) {
+            //console.log('Start!');
+            this.onMouseWheelStart.dispatch([{
+                distance: { x: 0, y: 0 },
+                source: event
+            }]);
+            this._wheeling = true;
+        },
+
+        _dispatchMouseWheelEnd: function(event) {
+            //console.log('End!');
+            deltaArray = [];
+            //console.log(this.str);
+            //this.str = '';
+            this.onMouseWheelEnd.dispatch([{
+                distance: { x: 0, y: 0 },
+                source: event
+            }]);
+            this._wheeling = false;
+        },
+
+        _dispatchUserReScroll: function(event) {
             this._dispatchMouseWheelEnd(event);
+            this._dispatchMouseWheelStart(event);
+        },
+
+        _detectUserScroll: function(normalizedEvent) {
+            // This is a lightweight helper function which takes in a set of consecutive
+            // linear data and tries to determine whether it is increasing or decreasing.
+            var calculateDeltaDirection = function(array,arrayMaxLength,startAt,length) {
+                arrayMaxLength = arrayMaxLength || array.length;
+                startAt = startAt || 0;
+                length = length || array.length;
+                var total = 0;
+                var offsetIdx1,offsetIdx2;
+                for ( var idx1 = 0; idx1 < length; idx1++ ) {
+                    for ( var idx2 = idx1+1; idx2 < length; idx2++ ) {
+                        offsetIdx1 = (idx1+startAt) % arrayMaxLength;
+                        offsetIdx2 = (idx2+startAt) % arrayMaxLength;
+                        if ( array[offsetIdx1] < array[offsetIdx2] ) total += (1/(idx2-idx1));
+                        if ( array[offsetIdx1] > array[offsetIdx2] ) total += (-1/(idx2-idx1));
+                   }
+                }
+                if (total >= 1) return 1; // Increasing trend
+                if (total <= -1) return -1; // Decreasing trend
+                return 0; // Stable
+            }
+
+
+            if (!this.flip) this.flip = 0;
+            if (!this.detected) this.detected = 0;
+            if (!this.str) this.str = '';
+            //var delta = event.deltaX;
+            //var delta = event.deltaY;
+            var delta = Math.abs(normalizedEvent.distance.y);
+            deltaArray[deltaArrayIndex] = delta;
+            deltaArrayIndex = (deltaArrayIndex+1) % deltaArraySize;
+            var string = '';
+            //for ( var i = Math.abs(delta)/2; i >= 0 ; i-- ) string += " ";
+            //string += Math.round(delta);
+            string += delta;
+            this.flip = 1-this.flip;
+            if ( this.flip === 0 ) string += " ";
+            var dir = calculateDeltaDirection(deltaArray,deltaArraySize,deltaArrayIndex,3);
+            if ( dir === 1 ) string += " \tIncreasing"
+            if ( dir === -1 ) string += " \tDecreasing"
+            if ( dir === 0 ) string += " \tNeutral"
+            //console.log(string);
+            this.str += string+'\n';
+
+            // Detection
+            var detected = '';
+            /* Method 1
+            if ( dir === 1 && deltaArray[deltaArrayIndex] <= 5 )
+                console.log("Detected -- Method #1");
+            /* */
+
+            //* Method 2
+            var idx1 = (deltaArrayIndex+deltaArraySize-1) % deltaArraySize;
+            if ( deltaArray[idx1] <= 5 ) {
+                var idx2 = (deltaArrayIndex+deltaArraySize-2) % deltaArraySize;
+                var idx3 = (deltaArrayIndex+deltaArraySize-3) % deltaArraySize;
+                if (( deltaArray[idx2]/deltaArray[idx1] > 2 &&
+                     deltaArray[idx2]-deltaArray[idx1] > 2) &&
+                    ( deltaArray[idx3]/deltaArray[idx1] > 2 &&
+                     deltaArray[idx3]-deltaArray[idx1] > 2))
+                    detected += "Detected -- Method #2\t\t";
+            }
+            /* */
+
+            //* Method 3
+            var idx1 = (deltaArrayIndex+deltaArraySize-5) % deltaArraySize;
+            if ( calculateDeltaDirection(deltaArray,deltaArraySize,idx1,5) === 1 ) {
+                var idx2 = (deltaArrayIndex+deltaArraySize-10) % deltaArraySize;
+                if ( calculateDeltaDirection(deltaArray,deltaArraySize,idx2,5) === -1 ) {
+                    detected += '[('+idx1+')Inc:';
+                    for ( var i = 0; i < 5; i++ )
+                        detected += deltaArray[(idx1+i) % deltaArraySize] + ', ';
+                    detected += '][('+idx2+')Dec:';
+                    for ( var i = 0; i < 5; i++ )
+                        detected += deltaArray[(idx2+i) % deltaArraySize] + ', ';
+                    detected += ']';
+                    detected += "Detected -- Method #3\t\t";
+                    //console.log(deltaArray);
+                }
+            }
+            /* */
+
+            if ( detected !== '' && this.detected === 0 ) {
+                //console.log(detected);
+                this._throttledDispatchUserReScroll(event.source)
+                this.detected = 1;
+            }
+            if ( detected === '' && this.detected === 1 ) {
+                this.detected = 0;
+            }
         }
     };
 
