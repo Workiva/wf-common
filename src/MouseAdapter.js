@@ -231,7 +231,8 @@ define(function(require) {
      * created for accessing the array for clarity.
      * @type {Array.<Array.<number>>}
      */
-    var deltaArray = [[],[]];
+    var deltaArrayX = [];
+    var deltaArrayY = [];
     
     /**
      * An index which always refers to the first (oldest) data point
@@ -240,15 +241,6 @@ define(function(require) {
      */
     var deltaArrayIndex = 0;
     
-    /**
-     * A constant provided for accessing the X and Y arrays of data.
-     * @type {number}
-     */
-    var DELTA_INDEX = {
-        x: 0,
-        y: 1
-    };
-
     /**
      * A helper function for calculating the index of the desired data given its 
      * relative index.  Negative numbers can be used to access the N'th most recent
@@ -423,9 +415,10 @@ define(function(require) {
          */
         _dispatchMouseWheelEnd: function(event) {
 
-            // Reset the delta array on MouseEnd to prevent false positives between
+            // Reset the delta arrays on MouseEnd to prevent false positives between
             // natural end and start events.
-            deltaArray = [[],[]];
+            deltaArrayX = [];
+            deltaArrayY = [];
 
             this.onMouseWheelEnd.dispatch([{
                 distance: { x: 0, y: 0 },
@@ -510,18 +503,19 @@ define(function(require) {
              *
              * One advantage this method has is that it can detect nearly all user events.
              * One disadvantage this method has is that it can be slow, owing to the fact 
-             * that it may take time (150ms+) to gather enough data before an upward trend is discernable.
-             * @param {DELTA_INDEX} axis The axis on which to perform this check
+             * that it may take time (150ms+) to gather enough data before an upward trend is 
+             * discernable.
+             * @param {Array.<number>} array The array of data to analyze for this check
              * @return {boolean} Returns true if conditions were satisfied to indicate the
              * user performed a scroll event, else false
              */
-            function detectDeltaIncrease(axis) {
+            function detectDeltaIncrease(array) {
                 var firstRange = getDeltaArrayIndex(-5);
                 // Check the last 5 data points and determine if they are increasing
-                if (calculateDeltaDirection(deltaArray[axis],firstRange,5,DELTA_ARRAY_SIZE) === 1) {
+                if (calculateDeltaDirection(array,firstRange,5,DELTA_ARRAY_SIZE) === 1) {
                     // Check the 5 data points prior to those and determine if they were decreasing
                     var secondRange = getDeltaArrayIndex(-10);
-                    if (calculateDeltaDirection(deltaArray[axis],secondRange,5,DELTA_ARRAY_SIZE) === -1) {
+                    if (calculateDeltaDirection(array,secondRange,5,DELTA_ARRAY_SIZE) === -1) {
                         return true;
                     }
                 }
@@ -541,29 +535,25 @@ define(function(require) {
              * One disadvantage this method has is that it cannot detect events when the 
              * the current inertia is below a certain threshold, including really light 
              * scrolls and scrolls made after the current scroll inertia has decayed a lot.
-             * @param {DELTA_INDEX} axis The axis on which to perform this check
+             * @param {Array.<number>} array The array of data to analyze for this check
              * @return {boolean} Returns true if conditions were satisfied to indicate the
              * user performed a scroll event, else false
              */
-            function detectNegativeSpike(axis) {
+            function detectNegativeSpike(array) {
                 var lastPoint = getDeltaArrayIndex(-1);
                 // Check if the current event delta is low.  Nearly all of the negative spikes 
                 // seem to reach between 0.5-2.5, so make sure the point is low enough
-                if (deltaArray[axis][lastPoint] <= 5) {
+                if (array[lastPoint] <= 5) {
                     var recentPoint2 = getDeltaArrayIndex(-2);
                     var recentPoint3 = getDeltaArrayIndex(-3);
                     // Check to see if the previous two points are significantly higher.
                     // Checks last TWO points instead of just last one because the deltas
                     // seem to be prone to intermittent noisy spikes which can create false
                     // positives.
-                    var isFirstPointHigherMagnitude = 
-                        deltaArray[axis][recentPoint2] / deltaArray[axis][lastPoint] > 2;
-                    var isSecondPointHigherMagnitude = 
-                        deltaArray[axis][recentPoint3] / deltaArray[axis][lastPoint] > 2;
-                    var isFirstPointHigherValue = 
-                        deltaArray[axis][recentPoint2] - deltaArray[axis][lastPoint] > 2;
-                    var isSecondPointHigherValue = 
-                        deltaArray[axis][recentPoint3] - deltaArray[axis][lastPoint] > 2;
+                    var isFirstPointHigherMagnitude = array[recentPoint2] / array[lastPoint] > 2;
+                    var isSecondPointHigherMagnitude = array[recentPoint3] / array[lastPoint] > 2;
+                    var isFirstPointHigherValue = array[recentPoint2] - array[lastPoint] > 2;
+                    var isSecondPointHigherValue = array[recentPoint3] - array[lastPoint] > 2;
                     if ((isFirstPointHigherMagnitude && isFirstPointHigherValue) &&
                         (isSecondPointHigherMagnitude && isSecondPointHigherValue)) {
                         return true;
@@ -573,15 +563,13 @@ define(function(require) {
             };
 
             // Store the newest data point in the history array, overwriting the oldest.
-            deltaArray[DELTA_INDEX.y][deltaArrayIndex] = Math.abs(normalizedEvent.distance.y);
-            deltaArray[DELTA_INDEX.x][deltaArrayIndex] = Math.abs(normalizedEvent.distance.x);
+            deltaArrayY[deltaArrayIndex] = Math.abs(normalizedEvent.distance.y);
+            deltaArrayX[deltaArrayIndex] = Math.abs(normalizedEvent.distance.x);
             deltaArrayIndex = (deltaArrayIndex+1) % DELTA_ARRAY_SIZE; // Increment index
 
             var detected =
-                detectNegativeSpike(DELTA_INDEX.y) ||
-                detectDeltaIncrease(DELTA_INDEX.y) ||
-                detectNegativeSpike(DELTA_INDEX.x) ||
-                detectDeltaIncrease(DELTA_INDEX.x);
+                detectNegativeSpike(deltaArrayY) || detectDeltaIncrease(deltaArrayY) ||
+                detectNegativeSpike(deltaArrayX) || detectDeltaIncrease(deltaArrayX);
 
             if (detected) {
                 this._throttledDispatchUserReScroll(normalizedEvent.source);
