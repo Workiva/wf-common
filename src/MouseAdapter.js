@@ -269,7 +269,7 @@ define(function(require) {
         }
         result = result % DELTA_ARRAY_SIZE;
         return result;
-    };
+    }
 
     //---------------------------------------------------------
     //
@@ -491,7 +491,7 @@ define(function(require) {
                     return -1; // Decreasing trend
                 }
                 return 0; // Stable
-            };
+            }
 
             /*
              * This is a helper function for detecting user scroll events.  The scroll deltas
@@ -520,7 +520,7 @@ define(function(require) {
                     }
                 }
                 return false;
-            };
+            }
 
             /*
              * This is a helper function for detecting user scroll events.  When the user
@@ -560,7 +560,7 @@ define(function(require) {
                     }
                 }
                 return false;
-            };
+            }
 
             // Store the newest data point in the history array, overwriting the oldest.
             deltaArrayY[deltaArrayIndex] = Math.abs(normalizedEvent.distance.y);
