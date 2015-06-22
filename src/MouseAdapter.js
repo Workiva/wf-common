@@ -207,6 +207,13 @@ define(function(require) {
     //---------------------------------------------------------
 
     /**
+     * This represents the delay after recieving a mouse event after which we can reasonably 
+     * conclude that there are no more inertial events incoming.
+     * @type {number}
+     */
+    var MAX_INERTIAL_DELAY = 90; // milliseconds
+
+    /**
      * A constant which represents the maximum amount of data buffered.  That is, when 
      * this value is N, the N most recent data points are preserved.  Beyond that, data 
      * is overwritten.  This should only be large enough to hold the desired amount of 
@@ -255,7 +262,7 @@ define(function(require) {
      * @type {Function}
      * @return {number} The properly offset index of the requested data point.
      */
-    var getDeltaArrayIndex = function(index) {
+    function getDeltaArrayIndex(index) {
         var result = (deltaArrayIndex+index);
         if (index < 0) {
             if (index < -DELTA_ARRAY_SIZE) {
@@ -324,7 +331,7 @@ define(function(require) {
          * @type {Function}
          */
         this._debouncedDispatchMouseWheelEnd = FunctionUtil.debounce(
-            this._dispatchMouseWheelEnd.bind(this), 90);
+            this._dispatchMouseWheelEnd.bind(this), MAX_INERTIAL_DELAY);
 
         /**
          * Throttled dispatcher for user initiated re-scroll events.
@@ -466,7 +473,7 @@ define(function(require) {
                    -1 if data appears to be decreasing.
                     0 if there is no discernable trend.
              */
-            var calculateDeltaDirection = function(array,startAt,length,arrayMaxLength) {
+            function calculateDeltaDirection(array, startAt,length, arrayMaxLength) {
                 arrayMaxLength = arrayMaxLength || array.length;
                 startAt = startAt || 0;
                 length = length || arrayMaxLength;
@@ -508,7 +515,7 @@ define(function(require) {
              * @return {boolean} Returns true if conditions were satisfied to indicate the
              * user performed a scroll event, else false
              */
-            var detectDeltaIncrease = function(axis) {
+            function detectDeltaIncrease(axis) {
                 var firstRange = getDeltaArrayIndex(-5);
                 // Check the last 5 data points and determine if they are increasing
                 if (calculateDeltaDirection(deltaArray[axis],firstRange,5,DELTA_ARRAY_SIZE) === 1) {
@@ -538,7 +545,7 @@ define(function(require) {
              * @return {boolean} Returns true if conditions were satisfied to indicate the
              * user performed a scroll event, else false
              */
-            var detectNegativeSpike = function(axis) {
+            function detectNegativeSpike(axis) {
                 var lastPoint = getDeltaArrayIndex(-1);
                 // Check if the current event delta is low.  Nearly all of the negative spikes 
                 // seem to reach between 0.5-2.5, so make sure the point is low enough
@@ -549,10 +556,16 @@ define(function(require) {
                     // Checks last TWO points instead of just last one because the deltas
                     // seem to be prone to intermittent noisy spikes which can create false
                     // positives.
-                    if ((deltaArray[axis][recentPoint2] / deltaArray[axis][lastPoint] > 2 &&
-                         deltaArray[axis][recentPoint2] - deltaArray[axis][lastPoint] > 2) &&
-                        (deltaArray[axis][recentPoint3] / deltaArray[axis][lastPoint] > 2 &&
-                         deltaArray[axis][recentPoint3] - deltaArray[axis][lastPoint] > 2)) {
+                    var isFirstPointHigherMagnitude = 
+                        deltaArray[axis][recentPoint2] / deltaArray[axis][lastPoint] > 2;
+                    var isSecondPointHigherMagnitude = 
+                        deltaArray[axis][recentPoint3] / deltaArray[axis][lastPoint] > 2;
+                    var isFirstPointHigherValue = 
+                        deltaArray[axis][recentPoint2] - deltaArray[axis][lastPoint] > 2;
+                    var isSecondPointHigherValue = 
+                        deltaArray[axis][recentPoint3] - deltaArray[axis][lastPoint] > 2;
+                    if ((isFirstPointHigherMagnitude && isFirstPointHigherValue) &&
+                        (isSecondPointHigherMagnitude && isSecondPointHigherValue)) {
                         return true;
                     }
                 }
