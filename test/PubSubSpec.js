@@ -21,7 +21,7 @@ define(function(require) {
 
     describe('PubSub', function() {
 
-        var key = 'call_me';
+        var key = 'callme';
 
         beforeEach(function() {
             ps.unsubAll();

@@ -26,7 +26,7 @@ define(function(require) {
 
     function joinName(name) {
         if (name && Array.isArray(name)) {
-            name = name.join('_');
+            name = name.join('');
         }
         return name;
     }
