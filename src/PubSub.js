@@ -1,5 +1,35 @@
+/*
+ * Copyright 2015 WebFilings, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 define(function(require) {
     'use strict';
+
+    // polyfill Array.isArray if needed
+    if (!Array.isArray) {
+      Array.isArray = function(arg) {
+        return Object.prototype.toString.call(arg) === '[object Array]';
+      };
+    }
+
+    function joinName(name) {
+        if (name && Array.isArray(name)) {
+            name = name.join('_');
+        }
+        return name;
+    }
 
     function PubSub() {
         this.subs = {};
@@ -8,6 +38,7 @@ define(function(require) {
     PubSub.prototype = {
 
         sub: function sub(name, callback) {
+            name = joinName(name);
             if (!this.subs[name]) {
               this.subs[name] = [];
             }
@@ -16,6 +47,7 @@ define(function(require) {
         },
 
         unsub: function unsub(name, callback) {
+            name = joinName(name);
             if (!this.subs[name]) {
               return;
             }
@@ -30,6 +62,7 @@ define(function(require) {
         },
 
         pub: function pub(name, message) {
+            name = joinName(name);
             if (!this.subs[name]) {
               return;
             }
