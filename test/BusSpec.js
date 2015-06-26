@@ -17,37 +17,37 @@
 define(function(require) {
     'use strict';
 
-    var ps = require('wf-js-common/PubSub');
+    var bus = require('wf-js-common/Bus');
 
-    describe('PubSub', function() {
+    describe('Bus', function() {
 
         var key = 'callme';
 
         beforeEach(function() {
-            ps.unsubAll();
+            bus.allOff();
         });
 
         it('should call the subscriber callback with the passed message', function() {
             var called = false;
             var msg = { my: 'data' };
             var passed = null;
-            ps.sub(key, function(data) {
+            bus.on(key, function(data) {
                 called = true;
                 passed = data;
             });
-            ps.pub(key, msg);
+            bus.send(key, msg);
             expect(called).toBe(true);
             expect(passed).toBe(msg);
         });
-        it('should call the subscriber with an array key joined by _', function() {
+        it('should call the subscriber with an array key joined', function() {
             var called = false;
             var msg = { my: 'data' };
             var passed = null;
-            ps.sub(key, function(data) {
+            bus.on(key, function(data) {
                 called = true;
                 passed = data;
             });
-            ps.pub(['call','me'], msg);
+            bus.send(['call','me'], msg);
             expect(called).toBe(true);
             expect(passed).toBe(msg);
         });
@@ -56,9 +56,9 @@ define(function(require) {
                 called = true;
             };
             var called = false;
-            ps.sub(key, fn);
-            ps.unsub(key, fn);
-            ps.pub(key)
+            bus.on(key, fn);
+            bus.off(key, fn);
+            bus.send(key)
             expect(called).toBe(false);
         });
         it('should unsubscribe all subscribers', function() {
@@ -66,11 +66,11 @@ define(function(require) {
                 called = true;
             };
             var called = false;
-            ps.sub(key, fn);
-            ps.sub(key + key, fn);
-            ps.unsubAll();
-            ps.pub(key);
-            ps.pub(key + key);
+            bus.on(key, fn);
+            bus.on(key + key, fn);
+            bus.allOff();
+            bus.send(key);
+            bus.send(key + key);
             expect(called).toBe(false);
         });
 

@@ -31,13 +31,13 @@ define(function(require) {
         return name;
     }
 
-    function PubSub() {
+    function Bus() {
         this.subs = {};
     }
 
-    PubSub.prototype = {
+    Bus.prototype = {
 
-        sub: function sub(name, callback) {
+        on: function on(name, callback) {
             name = joinName(name);
             if (!this.subs[name]) {
               this.subs[name] = [];
@@ -46,7 +46,7 @@ define(function(require) {
             this.subs[name].push(callback);
         },
 
-        unsub: function unsub(name, callback) {
+        off: function off(name, callback) {
             name = joinName(name);
             if (!this.subs[name]) {
               return;
@@ -61,7 +61,7 @@ define(function(require) {
             this.subs[name].splice(index, 1);
         },
 
-        pub: function pub(name, message) {
+        send: function send(name, message) {
             name = joinName(name);
             if (!this.subs[name]) {
               return;
@@ -73,14 +73,14 @@ define(function(require) {
             }
         },
 
-        unsubAll: function unsubAll() {
+        allOff: function allOff() {
             this.subs = {};
         }
     };
 
     var _instance;
     if (!_instance) {
-        _instance = new PubSub();
+        _instance = new Bus();
     }
 
     return _instance;
