@@ -40,7 +40,6 @@ define(function(require) {
     // So, disabling pointer event testing for now.
     pointerEventsAvailable = false;
 
-
     // Touch events are not newable in Chrome 41 unless you have mobile emulation, or a touch
     // device.  FF 36 seems unable to new up a TouchEvent, also.  We 'cheat' and set the
     // constructor to a TouchEvent.
@@ -61,7 +60,6 @@ define(function(require) {
         event.constructor = window.PointerEvent;
         return event;
     }
-
 
     describe('EventSource', function() {
         var event;
@@ -93,6 +91,20 @@ define(function(require) {
                 it('should detect a PointerEvent, with a pointer type of pen, as a MouseEvent', function() {
                     event = createPointerEvent();
                     event.pointerType = 'pen';
+                    expect(EventSource.isMouse(event)).toBe(true);
+                });
+                it('should detect a PointerEvent, with a pointer type of mouse, wrapped in a hammerjs event, as a MouseEvent', function() {
+                    var hammerEvent = {};
+                    event = createPointerEvent();
+                    event.pointerType = 'mouse';
+                    hammerEvent.source = event;
+                    expect(EventSource.isMouse(event)).toBe(true);
+                });
+                it('should detect a PointerEvent, with a pointer type of mouse, wrapped in a reactjs event, as a MouseEvent', function() {
+                    var reactEvent = {};
+                    event = createPointerEvent();
+                    event.pointerType = 'mouse';
+                    reactEvent.source = event;
                     expect(EventSource.isMouse(event)).toBe(true);
                 });
             }
