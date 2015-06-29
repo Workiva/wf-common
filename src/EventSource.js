@@ -22,6 +22,19 @@ define(function() {
     var MSPOINTER_TYPE_PEN   = 3;
     var MSPOINTER_TYPE_MOUSE = 4;
 
+    function getBrowserEvent(event) {
+        var browserEvent = event;
+        if (event.source) {
+            // Hammer events have a source property that is the original browser event.
+            browserEvent = event.source;
+        } else if (event.nativeEvent) {
+            // React events have a nativeEvent property that is the original browser event.
+            browserEvent = event.nativeEvent;
+        }
+
+        return browserEvent;
+    }
+
     /**
      * This is the actual workhorse of EventSource. It checks if the type of the event arg matches
      * the type arg. It handles generic browser events, and hammer events that have a event.source,
@@ -30,32 +43,53 @@ define(function() {
      * @param  {Object} type  The browser event you want to match
      * @return {Boolean} True if event and type are the same class, false otherwise.
      */
-    function checkEventType(event, type) {
+    function isEventOfType(event, type) {
         var match = false;
-        var browserEvent = event;
 
         if (event && type) {
+            var browserEvent = getBrowserEvent(event);
             // We check the constructor, instead of using instanceof, because we cannot make
             // synthetic PointerEvents and TouchEvents right now.  There is an added benefit of not
             // worrying about inheritance; WheelEvents inherit from MouseEvents.  If we used
             // instanceof, a WheelEvent is also a MouseEvent.
-
             // http://stackoverflow.com/questions/29018151/how-do-i-programmatically-create-a-touchevent-in-chrome-41
-
-            if (event.source) {
-                // Hammer events have a source property that is the original browser event.
-                browserEvent = event.source;
-            } else if (event.nativeEvent) {
-                // React events have a nativeEvent property that is the original browser event.
-                browserEvent = event.nativeEvent;
-            }
-
             if (browserEvent.constructor === type) {
                 match = true;
             }
         }
 
         return match;
+    }
+
+    function isPointerMouseOrPen(event) {
+        var result = false;
+
+        if (EventSource.isPointer(event)) {
+            var pointerEvent = getBrowserEvent(event);
+            var pType = pointerEvent.pointerType;
+
+            if (pType === 'mouse' || pType === MSPOINTER_TYPE_MOUSE ||
+                pType === 'pen' || pType === MSPOINTER_TYPE_PEN) {
+                result = true;
+            }
+        }
+
+        return result;
+    }
+
+    function isPointerTouch(event) {
+        var result = false;
+
+        if (EventSource.isPointer(event)) {
+            var pointerEvent = getBrowserEvent(event);
+            var pType = pointerEvent.pointerType;
+
+            if (pType === 'touch' || pType === MSPOINTER_TYPE_TOUCH) {
+                result = true;
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -66,45 +100,23 @@ define(function() {
      */
     var EventSource = {};
 
-    EventSource.isPointer = function (event) {
+    EventSource.isPointer = function(event) {
         // PointerEvent is IE11, MSPointerEvent is IE10.
-        return checkEventType(event, window.PointerEvent) || checkEventType(event, window.MSPointerEvent);
+        return isEventOfType(event, window.PointerEvent) || isEventOfType(event, window.MSPointerEvent);
     };
 
-    EventSource.isMouse = function (event) {
-        var result = false;
-        var pType = event.pointerType;
-
-        if (EventSource.isPointer(event)) {
-            // Treat MS pointer events with types of mouse and pen as mouse events.
-            if (pType === 'mouse' || pType === MSPOINTER_TYPE_MOUSE ||
-                pType === 'pen' || pType === MSPOINTER_TYPE_PEN) {
-                result = true;
-            }
-        } else {
-            result = checkEventType(event, window.MouseEvent);
-        }
-
+    EventSource.isMouse = function(event) {
+        var result = isPointerMouseOrPen(event) || isEventOfType(event, window.MouseEvent);
         return result;
     };
 
-    EventSource.isTouch = function (event) {
-        var result = false;
-
-        if (EventSource.isPointer(event)) {
-            // Treat MS pointer events with types of touch as touch events.
-            if (event.pointerType === 'touch' || event.pointerType === MSPOINTER_TYPE_TOUCH) {
-                result = true;
-            }
-        } else {
-            result = checkEventType(event, window.TouchEvent);
-        }
-
+    EventSource.isTouch = function(event) {
+        var result = isPointerTouch(event) || isEventOfType(event, window.TouchEvent);
         return result;
     };
 
-    EventSource.isWheel = function (event) {
-        return checkEventType(event, window.WheelEvent);
+    EventSource.isWheel = function(event) {
+        return isEventOfType(event, window.WheelEvent);
     };
 
     return EventSource;
