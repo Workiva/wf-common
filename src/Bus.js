@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-define(function(require) {
+define(function() {
     'use strict';
 
     // polyfill Array.isArray if needed
     if (!Array.isArray) {
-      Array.isArray = function(arg) {
-        return Object.prototype.toString.call(arg) === '[object Array]';
-      };
+        Array.isArray = function(arg) {
+            return Object.prototype.toString.call(arg) === '[object Array]';
+        };
     }
 
     function joinName(name) {
@@ -40,7 +40,7 @@ define(function(require) {
         on: function on(name, callback) {
             name = joinName(name);
             if (!this.subs[name]) {
-              this.subs[name] = [];
+                this.subs[name] = [];
             }
 
             this.subs[name].push(callback);
@@ -49,13 +49,13 @@ define(function(require) {
         off: function off(name, callback) {
             name = joinName(name);
             if (!this.subs[name]) {
-              return;
+                return;
             }
 
             var index = this.subs[name].indexOf(callback);
 
             if (index === -1){
-              return;
+                return;
             }
 
             this.subs[name].splice(index, 1);
@@ -64,7 +64,7 @@ define(function(require) {
         send: function send(name, message) {
             name = joinName(name);
             if (!this.subs[name]) {
-              return;
+                return;
             }
             var thesubs = this.subs[name];
             for (var i = 0; i < thesubs.length; i++) {
