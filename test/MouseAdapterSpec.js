@@ -17,9 +17,11 @@
 define(function(require) {
     'use strict';
 
+    var AsyncSpec = require('./AsyncSpec');
     var MouseAdapter = require('wf-js-common/MouseAdapter');
 
     describe('MouseAdapter', function() {
+        var async = new AsyncSpec(this);
 
         var target = {
             addEventListener: function() {},
@@ -252,7 +254,7 @@ define(function(require) {
             }]);
         });
 
-        it('should dispatch "onMouseWheelEnd" 50ms after the last mouse wheel', function() {
+        async.it('should dispatch "onMouseWheelEnd" 50ms after the last mouse wheel', function(done) {
             spyOn(adapter.onMouseWheelEnd, 'dispatch');
             var evt = {
                 currentTarget: target,
@@ -262,13 +264,13 @@ define(function(require) {
                 VERTICAL_AXIS: 'y'
             };
             adapter._onMouseWheel(evt);
-            waits(50);
-            runs(function() {
+            setTimeout(function() {
                 expect(adapter.onMouseWheelEnd.dispatch).toHaveBeenCalledWith([{
                     distance: { x: 0, y: 0 },
                     source: evt
                 }]);
-            });
+                done();
+            }, 50);
         });
     });
 });
