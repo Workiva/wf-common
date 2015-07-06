@@ -15,6 +15,7 @@
     "smithy.yaml"
   ],
   "dependencies": {
+    "lodash": "3.6.0",
     "modernizr": "2.6.2",
     "bowser": "0.7.2"
   },
