@@ -41,6 +41,6 @@ class Observable {
         found = true;
       }
     });
-    _streamController.add(vars);
+    _streamController.add(vars.reversed);
   }
 }
