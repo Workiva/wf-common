@@ -49,9 +49,12 @@ define([
             this.onChanged.dispatch([this, EVENTS.ITEM_ADDED, item]);
         },
         remove: function(item) {
+            var index = this._collection.indexOf(item);
             this._remove(item);
-            this._collection.splice(this._collection.indexOf(item), 1);
-            this.onChanged.dispatch([this, EVENTS.ITEM_REMOVED, item]);
+            if (index >= 0) {
+                this._collection.splice(index, 1);
+                this.onChanged.dispatch([this, EVENTS.ITEM_REMOVED, item]);
+            }
         },
         reset: function(items) {
             for (var s = 0; s < this._collection.length; s++) {
