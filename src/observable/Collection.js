@@ -49,9 +49,12 @@ define([
             this.onChanged.dispatch([this, EVENTS.ITEM_ADDED, item]);
         },
         remove: function(item) {
+            if (item === null || item === undefined) {
+                return;
+            }
             var index = this._collection.indexOf(item);
-            this._remove(item);
             if (index >= 0) {
+                this._remove(item);
                 this._collection.splice(index, 1);
                 this.onChanged.dispatch([this, EVENTS.ITEM_REMOVED, item]);
             }
