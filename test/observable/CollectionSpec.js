@@ -112,6 +112,10 @@ define([
 
                 expect(collection.sizeOf()).toEqual(2);
                 expect(collection._collection).toEqual(['a value','c value']);
+
+                collection.remove('never gonna give you up');
+                expect(collection.sizeOf()).toEqual(2);
+                expect(collection._collection).toEqual(['a value','c value']);
             });
 
             it('should return index of given value', function() {
