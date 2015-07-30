@@ -49,9 +49,15 @@ define([
             this.onChanged.dispatch([this, EVENTS.ITEM_ADDED, item]);
         },
         remove: function(item) {
-            this._remove(item);
-            this._collection.splice(this._collection.indexOf(item), 1);
-            this.onChanged.dispatch([this, EVENTS.ITEM_REMOVED, item]);
+            if (item === null || item === undefined) {
+                return;
+            }
+            var index = this._collection.indexOf(item);
+            if (index >= 0) {
+                this._remove(item);
+                this._collection.splice(index, 1);
+                this.onChanged.dispatch([this, EVENTS.ITEM_REMOVED, item]);
+            }
         },
         reset: function(items) {
             for (var s = 0; s < this._collection.length; s++) {

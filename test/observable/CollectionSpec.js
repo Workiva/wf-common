@@ -112,6 +112,17 @@ define([
 
                 expect(collection.sizeOf()).toEqual(2);
                 expect(collection._collection).toEqual(['a value','c value']);
+
+                collection.remove('never gonna give you up');
+                expect(collection.sizeOf()).toEqual(2);
+                expect(collection._collection).toEqual(['a value','c value']);
+
+                // trying to remove null shouldn't blow up or change the collection
+                expect(function() { collection.remove(null); }).not.toThrow();
+                expect(function() { collection.remove(undefined); }).not.toThrow();
+                expect(collection.sizeOf()).toEqual(2);
+                expect(collection._collection).toEqual(['a value','c value']);
+
             });
 
             it('should return index of given value', function() {
