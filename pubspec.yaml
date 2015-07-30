@@ -1,4 +1,5 @@
 name: wCommon
+sudo: false
 description: Dart bindings for wf-common
 dependencies:
 dev_dependencies:
