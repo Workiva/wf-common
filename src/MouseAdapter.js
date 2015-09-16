@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 WebFilings, LLC
+ * Copyright 2015 Workiva Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -202,12 +202,12 @@ define(function(require) {
     }
 
     //---------------------------------------------------------
-    // The Scroll-detection mechanism depends on collecting and storing a small buffer 
+    // The Scroll-detection mechanism depends on collecting and storing a small buffer
     // of scroll history in order to analyze and interpret it for patterns.
     //---------------------------------------------------------
 
     /**
-     * This represents the delay after recieving a mouse event after which we can reasonably 
+     * This represents the delay after recieving a mouse event after which we can reasonably
      * conclude that there are no more inertial events incoming.
      * @type {number}
      */
@@ -275,9 +275,9 @@ define(function(require) {
             this._dispatchUserReScroll.bind(this), 60);
 
         /**
-         * A constant which represents the maximum amount of data buffered.  That is, when 
-         * this value is N, the N most recent data points are preserved.  Beyond that, data 
-         * is overwritten.  This should only be large enough to hold the desired amount of 
+         * A constant which represents the maximum amount of data buffered.  That is, when
+         * this value is N, the N most recent data points are preserved.  Beyond that, data
+         * is overwritten.  This should only be large enough to hold the desired amount of
          * data and not any larger to preserve memory.
          *
          * This number is 10 because one detection method (_detectDeltaIncrease)
@@ -285,16 +285,16 @@ define(function(require) {
          * @type {number}
          */
         this.DELTA_ARRAY_SIZE = 10;
-        
+
         /**
-         * A two dimensional array of size [2][DELTA_ARRAY_SIZE] which holds data captured.  
-         * It holds separate data for the X- and Y-axis, hence the 2.  Constants have been 
+         * A two dimensional array of size [2][DELTA_ARRAY_SIZE] which holds data captured.
+         * It holds separate data for the X- and Y-axis, hence the 2.  Constants have been
          * created for accessing the array for clarity.
          * @type {Array.<Array.<number>>}
          */
         this._deltaArrayX = [];
         this._deltaArrayY = [];
-        
+
         /**
          * An index which always refers to the first (oldest) data point
          * in the array.  It also represents the point that will be overwritten by new data.
@@ -399,7 +399,7 @@ define(function(require) {
 
 
         /**
-         * Perform a ReScroll dispatch, which currently means dispatch a MouseEnd event 
+         * Perform a ReScroll dispatch, which currently means dispatch a MouseEnd event
          * followed by a MouseStart event, to alert listeners that the user performed a
          * new distinct scroll event.  This could easily be refactored into a separate
          * observable if desired in the future.
@@ -412,7 +412,7 @@ define(function(require) {
         },
 
         /**
-         * This is a helper function which takes in a set of consecutive linear data 
+         * This is a helper function which takes in a set of consecutive linear data
          * and tries to determine whether it is increasing or decreasing.  It can
          * operate on an entire array, or only a specified section of it. When given a
          * starting point and a length that extends outside the boundaries of the array,
@@ -420,9 +420,9 @@ define(function(require) {
          * @param {Array.<number>} array The array of data to perform analysis on.
          * @param {number} arrayMaxLength [optional] The max length of the array.  If
          * not given, assumed to be array.length
-         * @param {number} startAt [optional] The index in the array where the target 
+         * @param {number} startAt [optional] The index in the array where the target
          * data begins.  If not specified, assumes this index is 0.
-         * @param {number} length [optional] The number of data points to examine.  
+         * @param {number} length [optional] The number of data points to examine.
          * If not specified, assumed to be the entire array length.
          * @return {number} Returns:
                 1 if data appears to be increasing.
@@ -459,15 +459,15 @@ define(function(require) {
 
         /**
          * This is a helper function for detecting user scroll events.  The scroll deltas
-         * will decay slowly over time, but they typically wont trend upwards again 
-         * unless the user performs another scroll.  Thus, when the scroll deltas are 
-         * trending downward and suddenly begin to increase, this is a strong indication 
+         * will decay slowly over time, but they typically wont trend upwards again
+         * unless the user performs another scroll.  Thus, when the scroll deltas are
+         * trending downward and suddenly begin to increase, this is a strong indication
          * of a user event.  This function works by detecting these increases preceded by
          * a normal decreasing trend.
          *
          * One advantage this method has is that it can detect nearly all user events.
-         * One disadvantage this method has is that it can be slow, owing to the fact 
-         * that it may take time (150ms+) to gather enough data before an upward trend is 
+         * One disadvantage this method has is that it can be slow, owing to the fact
+         * that it may take time (150ms+) to gather enough data before an upward trend is
          * discernable.
          * @param {Array.<number>} array The array of data to analyze for this check
          * @return {boolean} Returns true if conditions were satisfied to indicate the
@@ -489,16 +489,16 @@ define(function(require) {
 
         /**
          * This is a helper function for detecting user scroll events.  When the user
-         * performs a scroll (at least with a track pad), the scroll delta drops to 
-         * nearly 0 before the new momentum is added to the scroll inertia. Because the 
-         * inertia typically decays very slowly over time, a significant decrease in the 
-         * scroll delta is a strong indication of a user event. This function works by 
+         * performs a scroll (at least with a track pad), the scroll delta drops to
+         * nearly 0 before the new momentum is added to the scroll inertia. Because the
+         * inertia typically decays very slowly over time, a significant decrease in the
+         * scroll delta is a strong indication of a user event. This function works by
          * detecting these negative spikes in the scroll delta.
          *
-         * One advantage this method has is that it can detect events as soon as they 
+         * One advantage this method has is that it can detect events as soon as they
          * occur because it does not take time to collect data.
-         * One disadvantage this method has is that it cannot detect events when the 
-         * the current inertia is below a certain threshold, including really light 
+         * One disadvantage this method has is that it cannot detect events when the
+         * the current inertia is below a certain threshold, including really light
          * scrolls and scrolls made after the current scroll inertia has decayed a lot.
          * @param {Array.<number>} array The array of data to analyze for this check
          * @return {boolean} Returns true if conditions were satisfied to indicate the
@@ -507,7 +507,7 @@ define(function(require) {
          */
         _detectNegativeSpike: function(array) {
             var lastPoint = this._getDeltaArrayIndex(-1);
-            // Check if the current event delta is low.  Nearly all of the negative spikes 
+            // Check if the current event delta is low.  Nearly all of the negative spikes
             // seem to reach between 0.5-2.5, so make sure the point is low enough
             if (array[lastPoint] <= 5) {
                 var recentPoint2 = this._getDeltaArrayIndex(-2);
@@ -529,11 +529,11 @@ define(function(require) {
         },
 
         /**
-         * A helper function for calculating the index of the desired data given its 
+         * A helper function for calculating the index of the desired data given its
          * relative index.  Negative numbers can be used to access the N'th most recent
          * data point.
          *
-         * For example: 
+         * For example:
          *   getDeltaArrayIndex(0) will return the index of the oldest data point
          *   getDeltaArrayIndex(DELTA_ARRAY_SIZE-1) will return the most recent data index.
          *   getDeltaArrayIndex(-1) will return the most recent data point index.
