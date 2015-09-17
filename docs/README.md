@@ -1,4 +1,4 @@
-WebFilings Common JavaScript Utilities
+Workiva Common JavaScript Utilities
 ================================================================================
 
-> Common JavaScript functionality for all WebFilings applications.
+> Common JavaScript functionality for all Workiva applications.

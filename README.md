@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/WebFilings/wf-common.png)](https://travis-ci.org/WebFilings/wf-common)
+[![Build Status](https://travis-ci.org/Workiva/wf-common.png)](https://travis-ci.org/Workiva/wf-common)
 
-WebFilings Common JavaScript Utilities
+Workiva Common JavaScript Utilities
 ================================================================================
 
-> Common JavaScript functionality for all WebFilings applications.
+> Common JavaScript functionality for all Workiva applications.
 
 
 Consuming This Library
@@ -16,7 +16,7 @@ Consuming This Library
 $ npm install -g bower
 
 # install this package
-$ bower install git@github.com:WebFilings/wf-js-common.git#{version}
+$ bower install git@github.com:Workiva/wf-js-common.git#{version}
 ```
 
 - In your requirejs configuration, ensure the following config exists
@@ -43,7 +43,7 @@ Development: Getting Started
 
 ```bash
 # clone the repo
-$ git clone git@github.com:WebFilings/wf-js-common.git
+$ git clone git@github.com:Workiva/wf-js-common.git
 $ cd wf-js-common
 
 # install global tools if you haven't already
@@ -109,7 +109,7 @@ Familiarize yourself with the package managers we use:
 Development: Process
 --------------------------------------------------------------------------------
 
-This project uses [wf-js-grunt](https://github.com/WebFilings/wf-js-grunt#tasks).
+This project uses [wf-js-grunt](https://github.com/Workiva/wf-js-grunt#tasks).
 Please see that repo for more information.
 
 [Node]: http://nodejs.org/api/
