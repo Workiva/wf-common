@@ -1,19 +1,20 @@
+@TestOn('content-shell')
+
 library wCommon.test;
 
+import 'dart:js';
+
 // Testing imports
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:unittest/html_enhanced_config.dart';
 
 // Testing dependencies
 import 'dart:async';
 import 'package:wCommon/wCommon.dart';
 
-class MockJsObject extends Mock {}
+class MockJsObject extends Mock implements JsFunction {}
 
 main() {
-  useHtmlEnhancedConfiguration();
-
   var observable;
   var jsObservable;
 

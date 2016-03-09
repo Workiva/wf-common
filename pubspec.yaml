@@ -2,6 +2,5 @@ name: wCommon
 description: Dart bindings for wf-common
 dependencies:
 dev_dependencies:
-  # unitttest 0.11.6 causes chromium errors
-    unittest: '>=0.11.0 <0.11.6'
-    mockito: '^0.8.2'
+  test: '0.12.11+2'
+  mockito: '0.11.0'
