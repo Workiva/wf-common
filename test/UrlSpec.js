@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-define([
-    'src/Url'
-], function (
-    Url
-) {
+define(function(require) {
     'use strict';
+
+    var Url = require('wf-js-common/Url');
 
     describe('Url.js Specs', function() {
 

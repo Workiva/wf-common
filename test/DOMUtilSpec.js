@@ -38,39 +38,49 @@ define(function(require) {
                 expect(event.eventType).toBeFalsy();
             });
 
-            it('should set the eventType of the event if the document does not contain ' +
-                'the eventType function', function() {
+            describe(' without document.createEvent', function() {
+                var origCreateEvent;
+                beforeEach(function() {
+                    origCreateEvent = document.createEvent;
+                });
+                afterEach(function() {
+                    document.createEvent = origCreateEvent;
+                });
 
-                document.createEvent = null;
-                document.createEventObject = function() {
-                    return {
-                        eventType: null
+                it('should set the eventType of the event if the document does not contain ' +
+                    'the eventType function', function() {
+
+                    document.createEvent = null;
+                    document.createEventObject = function() {
+                        return {
+                            eventType: null
+                        };
                     };
-                };
 
-                var event = DOMUtil.createEvent(eventType);
+                    var event = DOMUtil.createEvent(eventType);
 
-                expect(event.eventType).toEqual(eventType);
-                expect(event.type).toBeFalsy();
-                expect(event.bubbles).toBeFalsy();
-                expect(event.cancelable).toBeFalsy();
-            });
+                    expect(event.eventType).toEqual(eventType);
+                    expect(event.type).toBeFalsy();
+                    expect(event.bubbles).toBeFalsy();
+                    expect(event.cancelable).toBeFalsy();
+                });
 
-            it('should not set the type, bubbles, or cancelable properties of the event if the the document ' +
-                'does not contain the eventType function', function() {
+                it('should not set the type, bubbles, or cancelable properties of the event if the the document ' +
+                    'does not contain the eventType function', function() {
 
-                document.createEvent = null;
-                document.createEventObject = function() {
-                    return {
-                        eventType: null
+                    document.createEvent = null;
+                    document.createEventObject = function() {
+                        return {
+                            eventType: null
+                        };
                     };
-                };
 
-                var event = DOMUtil.createEvent(eventType);
+                    var event = DOMUtil.createEvent(eventType);
 
-                expect(event.type).toBeFalsy();
-                expect(event.bubbles).toBeFalsy();
-                expect(event.cancelable).toBeFalsy();
+                    expect(event.type).toBeFalsy();
+                    expect(event.bubbles).toBeFalsy();
+                    expect(event.cancelable).toBeFalsy();
+                });
             });
         });
 
