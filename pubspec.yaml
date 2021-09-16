@@ -4,3 +4,6 @@ dependencies:
 dev_dependencies:
   test: '0.12.13'
   mockito: '0.11.0'
+
+environment:
+  sdk: '>=2.11.0 <3.0.0'
